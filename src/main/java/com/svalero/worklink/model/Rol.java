@@ -12,32 +12,26 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity(name = "users")
-@Table(name = "users")
+@Entity(name = "rol")
+@Table(name = "rol")
 
-public class User {
+public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column
     private String name;
-    @Column(nullable = false, unique = true)
-    private String email;
-    @Column(nullable = false, length = 25)
-    private String password;
-    @Column(nullable = false, length = 9)
-    private String phone;
+    @Column
+    private String description;
+    @Column(name="access_level")
+    private float accessLevel;
+    @Column
+    private Boolean active;
+
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime created;
     @UpdateTimestamp
     @Column(name = "updated_date")
     private LocalDateTime updated;
-    @Column(nullable = false)
-    private boolean active;
-
-    // RELACIÓN CON ROL
-    @ManyToOne
-    @JoinColumn(name = "rol_id")
-    private Rol rol;
 }
