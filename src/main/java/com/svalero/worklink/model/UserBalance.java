@@ -25,15 +25,15 @@ public class UserBalance {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
     @Column(nullable = false)
-    private int year; // Año del balance (2024, 2025...)
+    private int year;
     @Column(name = "vacation_days", nullable = false)
-    private int vacationDays; // Días de vacaciones disponibles
+    private int vacationDays;
     @Column(name = "excess_days", nullable = false)
-    private int excessDays; // Días de exceso disponibles
+    private int excessDays;
     @Column(name = "unpaid_days", nullable = false)
-    private int unpaidDays; // Días no retribuidos disponibles (o puedes dejarlo sin límite)
+    private int unpaidDays;
     @Column(name = "hours_balance", nullable = false)
-    private float hoursBalance; // Bolsa de horas disponibles
+    private float hoursBalance;
 
     @CreationTimestamp
     @Column(name = "created_date")
