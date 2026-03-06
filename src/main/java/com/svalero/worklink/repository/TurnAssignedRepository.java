@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface TurnAssignedRepository extends CrudRepository<TurnAssigned, Integer> {
+public interface TurnAssignedRepository extends CrudRepository<TurnAssigned,Long> {
 
     List<TurnAssigned> findAll();
     Optional<TurnAssigned> findById(Long id);
