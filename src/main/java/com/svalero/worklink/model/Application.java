@@ -16,13 +16,15 @@ import java.time.LocalTime;
 @Entity(name = "application")
 @Table(name = "application")
 
+
 public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private ApplicationStatus status;
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime created;
@@ -46,12 +48,17 @@ public class Application {
     private LocalTime toTime;
 
     // CAMPOS PARA CAMBIO DE TURNO
-    @Column(name = "affected_user_id")
-    private Long affectedUserId; // Con quién cambias
-    @Column(name = "turn_give_id")
-    private Long turnGiveId; // Turno que cedes
-    @Column(name = "turn_receive_id")
-    private Long turnReceiveId; // Turno que recibes
+    @ManyToOne
+    @JoinColumn(name = "affected_user_id")
+    private User affectedUser; // Con quién cambias
+
+    @ManyToOne
+    @JoinColumn(name = "turn_give_id")
+    private Turns turnGive; // Turno que cedes
+
+    @ManyToOne
+    @JoinColumn(name = "turn_receive_id")
+    private Turns turnReceive; // Turno que recibes
 
     // COMENTARIOS
     @Column(length = 500)
