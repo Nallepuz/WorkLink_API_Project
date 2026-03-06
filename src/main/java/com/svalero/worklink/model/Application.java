@@ -49,15 +49,15 @@ public class Application {
 
     // CAMPOS PARA CAMBIO DE TURNO
     @ManyToOne
-    @JoinColumn(name = "affected_user_id")
+    @JoinColumn(name = "affected_user_id", nullable = true)
     private User affectedUser; // Con quién cambias
 
     @ManyToOne
-    @JoinColumn(name = "turn_give_id")
+    @JoinColumn(name = "turn_give_id", nullable = true)
     private Turns turnGive; // Turno que cedes
 
     @ManyToOne
-    @JoinColumn(name = "turn_receive_id")
+    @JoinColumn(name = "turn_receive_id", nullable = true)
     private Turns turnReceive; // Turno que recibes
 
     // COMENTARIOS
