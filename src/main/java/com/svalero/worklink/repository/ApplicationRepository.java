@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ApplicationRepository extends CrudRepository<Application, Integer> {
+public interface ApplicationRepository extends CrudRepository<Application, Long> {
 
     List<Application> findAll();
     Optional<Application> findById(Long id);
