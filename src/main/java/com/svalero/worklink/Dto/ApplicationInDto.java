@@ -13,6 +13,8 @@ import java.time.LocalTime;
 public class ApplicationInDto {
 
     private Long applicationTypeId;
+    private Long userId;
+    private Long resolverId;
     private String comments;
 
     // DÍAS
