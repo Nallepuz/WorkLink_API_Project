@@ -70,7 +70,7 @@ public class TurnService {
     }
 
     // DELETE
-    public void delteTurn(Long id) throws RolNotFoundException {
+    public void deleteTurn(Long id) throws RolNotFoundException {
         Turns turn = turnRepository.findById(id)
                 .orElseThrow(() -> new TurnsNotFoundException("Turn not found"));
         turnRepository.deleteById(id);
