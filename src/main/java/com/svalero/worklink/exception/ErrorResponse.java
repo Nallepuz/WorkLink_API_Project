@@ -15,7 +15,7 @@ public class ErrorResponse {
     public String message;
     private Map<String, String> errors;
 
-    public static ErrorResponse generalError(int code, String title, String message, Map<String, String> errors) {
+    public static ErrorResponse generalError(int code, String title, String message) {
         return new ErrorResponse(code, title, message, new HashMap<>());
     }
 
