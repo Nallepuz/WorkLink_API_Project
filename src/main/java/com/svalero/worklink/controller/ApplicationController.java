@@ -1,7 +1,6 @@
 package com.svalero.worklink.controller;
 
-import com.svalero.worklink.Dto.ApplicationInDto;
-import com.svalero.worklink.Dto.ApplicationOutDto;
+import com.svalero.worklink.Dto.*;
 import com.svalero.worklink.exception.ApplicationNotFoundException;
 import com.svalero.worklink.exception.ErrorResponse;
 import com.svalero.worklink.service.ApplicationService;
@@ -31,9 +30,23 @@ public class ApplicationController {
         return ResponseEntity.ok(application);
     }
 
-    @GetMapping("/application/{id}")
-    public ResponseEntity<ApplicationOutDto> getApplicationId(@PathVariable Long id) throws ApplicationNotFoundException {
-        ApplicationOutDto application = applicationService.findById(id);
+    @GetMapping("/application/days/{id}")
+    public ResponseEntity<ApplicationDaysOutDto> getDayApplicationId(@PathVariable Long id) throws ApplicationNotFoundException {
+        ApplicationDaysOutDto application = applicationService.findDayById(id);
+
+        return ResponseEntity.ok(application);
+    }
+
+    @GetMapping("/application/hours/{id}")
+    public ResponseEntity<ApplicationHoursOutDto> getHourApplicationId(@PathVariable Long id) throws ApplicationNotFoundException {
+        ApplicationHoursOutDto application = applicationService.findHourById(id);
+
+        return ResponseEntity.ok(application);
+    }
+
+    @GetMapping("/application/change/{id}")
+    public ResponseEntity<ApplicationChangeOutDto> getChangeApplicationId(@PathVariable Long id) throws ApplicationNotFoundException {
+        ApplicationChangeOutDto application = applicationService.findChangeById(id);
 
         return ResponseEntity.ok(application);
     }

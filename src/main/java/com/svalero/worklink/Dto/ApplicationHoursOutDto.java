@@ -11,17 +11,27 @@ import java.time.LocalTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApplicationOutDto {
+public class ApplicationHoursOutDto {
 
     private Long id;
     private String status;
 
+    // TYPE
     private Long applicationTypeId;
+
+    // USUARIOS
     private Long userId;
-
     private LocalDateTime created;
-    private LocalDateTime resolved;
-
-    // COMENTARIOS
     private String comments;
+
+    // HORAS
+    private Float hoursRequested;
+    private LocalDate date;
+    private LocalTime fromTime;
+    private LocalTime toTime;
+
+    // USUARIO QUE RESUELVE
+    private Long resolverId;
+    private LocalDateTime resolved;
+    private String resolverComments;
 }
