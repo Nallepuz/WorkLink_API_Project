@@ -45,10 +45,8 @@ public class AppConfig {
         modelMapper.typeMap(Application.class, ApplicationOutDto.class)
                 .addMappings(m -> {
                     m.map(src -> src.getUser().getId(), ApplicationOutDto::setUserId);
-                    m.map(src -> src.getUser().getEmail(), ApplicationOutDto::setUserEmail);
 
                     m.map(src -> src.getApplicationType().getId(), ApplicationOutDto::setApplicationTypeId);
-                    m.map(src -> src.getApplicationType().getName(), ApplicationOutDto::setApplicationTypeName);
                 });
 
         return modelMapper;

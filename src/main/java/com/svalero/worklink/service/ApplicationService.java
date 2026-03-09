@@ -1,17 +1,10 @@
 package com.svalero.worklink.service;
 
-import com.svalero.worklink.Dto.ApplicationInDto;
-import com.svalero.worklink.Dto.ApplicationOutDto;
+import com.svalero.worklink.Dto.*;
 import com.svalero.worklink.exception.ApplicationNotFoundException;
 import com.svalero.worklink.exception.ApplicationTypeNotFoundException;
-import com.svalero.worklink.model.Application;
-import com.svalero.worklink.model.ApplicationStatus;
-import com.svalero.worklink.model.ApplicationType;
-import com.svalero.worklink.model.User;
-import com.svalero.worklink.repository.ApplicationRepository;
-import com.svalero.worklink.repository.ApplicationTypeRepository;
-import com.svalero.worklink.repository.RolRepository;
-import com.svalero.worklink.repository.UserRepository;
+import com.svalero.worklink.model.*;
+import com.svalero.worklink.repository.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +24,8 @@ public class ApplicationService {
     private ApplicationTypeRepository applicationTypeRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private TurnRepository turnRepository;
 
     // GET
     public List<ApplicationOutDto> findAll(String status, Long userId) throws ApplicationNotFoundException {
@@ -51,11 +46,77 @@ public class ApplicationService {
         }.getType());
     }
 
-    public ApplicationOutDto findById(Long id) throws ApplicationNotFoundException {
+    public ApplicationDaysOutDto findDayById(Long id) throws ApplicationNotFoundException {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
 
-        return modelMapper.map(application, ApplicationOutDto.class);
+        if (!application.getApplicationType().getName().equals("Vacaciones")
+                && !application.getApplicationType().getName().equals("Dias Exceso")
+                && !application.getApplicationType().getName().equals("No Retribuido")) {
+
+            throw new IllegalArgumentException("Application is not a days type");
+        }
+
+        ApplicationDaysOutDto app = modelMapper.map(application, ApplicationDaysOutDto.class);
+
+        app.setApplicationTypeId(application.getApplicationType().getId());
+        app.setUserId(application.getUser().getId());
+
+        if (application.getResolver() != null) {
+            app.setResolverId(application.getResolver().getId());
+        }
+        return app;
+    }
+
+    public ApplicationHoursOutDto findHourById(Long id) throws ApplicationNotFoundException {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
+
+        if (!application.getApplicationType().getName().equals("Bolsa de horas")) {
+            throw new IllegalArgumentException("Application is not a hours type");
+        }
+
+        ApplicationHoursOutDto app = modelMapper.map(application, ApplicationHoursOutDto.class);
+
+        app.setApplicationTypeId(application.getApplicationType().getId());
+        app.setUserId(application.getUser().getId());
+
+        if (application.getResolver() != null) {
+            app.setResolverId(application.getResolver().getId());
+        }
+        if (application.getUser() != null) {
+            app.setResolverId(application.getUser().getId());
+        }
+        return app;
+
+    }
+
+    public ApplicationChangeOutDto findChangeById(Long id) throws ApplicationNotFoundException {
+        Application application = applicationRepository.findById(id)
+                .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
+
+        if (!application.getApplicationType().getName().equals("Cambio de Turno")) {
+            throw new IllegalArgumentException("Application is not a change type");
+        }
+        ApplicationChangeOutDto app = modelMapper.map(application, ApplicationChangeOutDto.class);
+
+        app.setApplicationTypeId(application.getApplicationType().getId());
+        app.setUserId(application.getUser().getId());
+
+        if (application.getResolver() != null) {
+            app.setResolverId(application.getResolver().getId());
+        }
+        if (application.getAffectedUser() != null) {
+            app.setAffectedUserId(application.getAffectedUser().getId());
+        }
+        if (application.getTurnGive() != null) {
+            app.setTurnGiveId(application.getTurnGive().getId());
+        }
+        if (application.getTurnReceive() != null) {
+            app.setTurnReceiveId(application.getTurnReceive().getId());
+        }
+
+        return app;
     }
 
     public List<ApplicationOutDto> findByUser(Long userId) {
@@ -81,6 +142,21 @@ public class ApplicationService {
         newApp.setStatus(ApplicationStatus.PENDING);
         newApp.setResolver(null);
         newApp.setResolved(null);
+
+        if (type.getName().equals("Cambio de Turno")) {
+            User affectedUser = userRepository.findById(application.getAffectedUserId())
+                    .orElseThrow(() -> new ApplicationNotFoundException("Affected user not found"));
+
+            Turns turnGive = turnRepository.findById(application.getTurnGiveId())
+                    .orElseThrow(() -> new ApplicationNotFoundException("Turn give not found"));
+
+            Turns turnReceive = turnRepository.findById(application.getTurnReceiveId())
+                    .orElseThrow(() -> new ApplicationNotFoundException("Turn receive not found"));
+
+            newApp.setAffectedUser(affectedUser);
+            newApp.setTurnGive(turnGive);
+            newApp.setTurnReceive(turnReceive);
+        }
 
         Application savedApp = applicationRepository.save(newApp);
 
@@ -128,7 +204,8 @@ public class ApplicationService {
     }
 
     // PUT
-    public ApplicationOutDto modifyApplication(Long id, ApplicationInDto application) throws ApplicationNotFoundException {
+    public ApplicationOutDto modifyApplication(Long id, ApplicationInDto application) throws
+            ApplicationNotFoundException {
         Application existingApplication = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
 
