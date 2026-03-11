@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public class ApplicationService {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
 
-        if (!application.getApplicationType().getName().equals("Cambio de Turno")) {
+        if (!application.getApplicationType().getName().equals("Cambio de turno")) {
             throw new IllegalArgumentException("Application is not a change type");
         }
         ApplicationChangeOutDto app = modelMapper.map(application, ApplicationChangeOutDto.class);
@@ -149,7 +150,7 @@ public class ApplicationService {
         newApp.setResolver(null);
         newApp.setResolved(null);
 
-        if (type.getName().equals("Cambio de Turno")) {
+        if (type.getName().equals("Cambio de turno")) {
             User affectedUser = userRepository.findById(application.getAffectedUserId())
                     .orElseThrow(() -> new ApplicationNotFoundException("Affected user not found"));
 
@@ -187,13 +188,12 @@ public class ApplicationService {
                 if (application.getHoursRequested() == null || application.getDate() == null || application.getFromTime() == null || application.getToTime() == null) {
                     throw new IllegalArgumentException("Date and time range are required");
                 }
-                if (application.getFromTime().isAfter(application.getToTime()) ||
-                        application.getFromTime().equals(application.getToTime())) {
-                    throw new IllegalArgumentException("FromTime must be before ToTime");
+                if (application.getFromTime().equals(application.getToTime())) {
+                    throw new IllegalArgumentException("FromTime and ToTime cannot be the same");
                 }
                 break;
 
-            case "Cambio de Turno":
+            case "Cambio de turno":
                 if (application.getStartDate() == null || application.getEndDate() == null ||
                         application.getAffectedUserId() == null || application.getTurnGiveId() == null ||
                         application.getTurnReceiveId() == null) {
@@ -250,7 +250,7 @@ public class ApplicationService {
                 applyHoursEffect(existingApplication);
                 break;
 
-            case "Cambio de Turno":
+            case "Cambio de turno":
                 applyChangeEffect(existingApplication);
                 break;
         }
