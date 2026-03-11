@@ -6,8 +6,10 @@ import com.svalero.worklink.exception.TurnsAssignedNotFoundException;
 import com.svalero.worklink.model.TurnAssigned;
 import com.svalero.worklink.model.Turns;
 import com.svalero.worklink.model.User;
+import com.svalero.worklink.model.UserBalance;
 import com.svalero.worklink.repository.TurnAssignedRepository;
 import com.svalero.worklink.repository.TurnRepository;
+import com.svalero.worklink.repository.UserBalanceRepository;
 import com.svalero.worklink.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -27,6 +29,8 @@ public class TurnAssignedService {
     private UserRepository userRepository;
     @Autowired
     private TurnRepository turnRepository;
+    @Autowired
+    UserBalanceRepository userBalanceRepository;
 
     // GET
     public List<TurnAssignedOutDto> findAll(Long userId, Long turnId)throws TurnsAssignedNotFoundException {
@@ -62,11 +66,28 @@ public class TurnAssignedService {
         Turns turn = turnRepository.findById(assigned.getTurnId())
                 .orElseThrow(() -> new TurnsAssignedNotFoundException("Turn not found"));
 
+        UserBalance balance = userBalanceRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("user balance has no vacations days"));
+
+        if (turn.getName().toLowerCase().contains("vacaciones")) {
+            if (balance.getVacationDays() > 0) {
+                balance.setVacationDays(balance.getVacationDays() - 1);
+                userBalanceRepository.save(balance); // Guardamos el balance actualizado
+            } else {
+                throw new RuntimeException("No quedan días de vacaciones disponibles");
+            }
+        }
+
         TurnAssigned newAssigned = modelMapper.map(assigned, TurnAssigned.class);
         newAssigned.setUser(user);
         newAssigned.setTurn(turn);
+        TurnAssigned existingAssigned = turnAssignedRepository.save(newAssigned);
 
-        return modelMapper.map(turnAssignedRepository.save(newAssigned), TurnAssignedOutDto.class);
+        TurnAssignedOutDto savedAssigned = modelMapper.map(existingAssigned, TurnAssignedOutDto.class);
+        savedAssigned.setUserName(existingAssigned.getUser().getName());
+        savedAssigned.setTurnName(existingAssigned.getTurn().getName());
+
+        return savedAssigned;
     }
 
     // PUT

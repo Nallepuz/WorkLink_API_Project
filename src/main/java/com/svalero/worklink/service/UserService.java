@@ -7,7 +7,9 @@ import com.svalero.worklink.exception.RolNotFoundException;
 import com.svalero.worklink.exception.UserNotFoundException;
 import com.svalero.worklink.model.Rol;
 import com.svalero.worklink.model.User;
+import com.svalero.worklink.model.UserBalance;
 import com.svalero.worklink.repository.RolRepository;
+import com.svalero.worklink.repository.UserBalanceRepository;
 import com.svalero.worklink.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -27,6 +29,8 @@ public class UserService {
     private ModelMapper modelMapper;
     @Autowired
     private RolRepository rolRepository;
+    @Autowired
+    private UserBalanceRepository userBalanceRepository;
 
     // GET
     public List<UserOutDto> findAll(String email, String name, Boolean active) throws UserNotFoundException {
@@ -67,6 +71,16 @@ public class UserService {
 
         User newUser = modelMapper.map(user, User.class);
         newUser.setRol(rol);
+        User savedUser = userRepository.save(newUser);
+
+        UserBalance userBalance = new UserBalance();
+        userBalance.setUser(savedUser);
+        userBalance.setVacationDays(40);
+        userBalance.setExcessDays(2);
+        userBalance.setUnpaidDays(2);
+        userBalance.setHoursBalance(24);
+        userBalance.setYear(LocalDateTime.now().getYear());
+        userBalanceRepository.save(userBalance);
 
         return userRepository.save(newUser);
     }

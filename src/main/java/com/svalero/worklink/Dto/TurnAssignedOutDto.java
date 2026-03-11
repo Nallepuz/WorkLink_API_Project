@@ -21,4 +21,5 @@ public class TurnAssignedOutDto {
 
     private Long turnId;
     private String turnName;
+    private String info;
 }

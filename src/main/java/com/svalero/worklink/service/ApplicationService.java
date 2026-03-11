@@ -10,7 +10,9 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -26,6 +28,10 @@ public class ApplicationService {
     private UserRepository userRepository;
     @Autowired
     private TurnRepository turnRepository;
+    @Autowired
+    private UserBalanceRepository userBalanceRepository;
+    @Autowired
+    private TurnAssignedRepository turnAssignedRepository;
 
     // GET
     public List<ApplicationOutDto> findAll(String status, Long userId) throws ApplicationNotFoundException {
@@ -215,23 +221,174 @@ public class ApplicationService {
                     .orElseThrow(() -> new ApplicationNotFoundException("Resolver not found"));
         }
 
-        modelMapper.map(application, existingApplication);
-
+        existingApplication.setStatus(application.getStatus());
         existingApplication.setResolver(resolver);
+        existingApplication.setResolverComments(application.getResolverComments());
         existingApplication.setResolved(LocalDateTime.now());
-        existingApplication.setFromTime(application.getFromTime());
-        existingApplication.setToTime(application.getToTime());
+
+        if (existingApplication.getStatus() == ApplicationStatus.APPROVED) {
+            applyEffects(existingApplication);
+        }
 
         Application savedApplication = applicationRepository.save(existingApplication);
-
         return modelMapper.map(savedApplication, ApplicationOutDto.class);
+    }
+
+    // CAMBIOS DE CALENDARIO
+
+    public void applyEffects(Application existingApplication) {
+        String typeName = existingApplication.getApplicationType().getName();
+
+        switch (typeName) {
+            case "Vacaciones":
+            case "Dias Exceso":
+            case "No Retribuido":
+                applyDaysEffect(existingApplication);
+                break;
+
+            case "Bolsa de horas":
+                applyHoursEffect(existingApplication);
+                break;
+
+            case "Cambio de Turno":
+                applyChangeEffect(existingApplication);
+                break;
+        }
+    }
+
+    public void applyDaysEffect(Application existingApplication) {
+
+        Long userId = existingApplication.getUser().getId();
+        int year = existingApplication.getStartDate().getYear();
+
+        UserBalance balance = userBalanceRepository
+                .findByUserIdAndYear(userId, year)
+                .orElseThrow();
+
+        long days = ChronoUnit.DAYS.between(
+                existingApplication.getStartDate(),
+                existingApplication.getEndDate()) + 1;
+
+        String type = existingApplication.getApplicationType().getName();
+
+        if (type.equals("Vacaciones")) {
+            if (balance.getVacationDays() < days) {
+                throw new RuntimeException("You have " + balance.getVacationDays() + " days");
+            }
+            balance.setVacationDays(balance.getVacationDays() - (int) days);
+        }
+        if (type.equals("Dias Exceso")) {
+            if (balance.getExcessDays() < days) {
+                throw new RuntimeException("You have " + balance.getExcessDays() + " days");
+            }
+            balance.setExcessDays(balance.getExcessDays() - (int) days);
+        }
+        if (type.equals("No Retribuido")) {
+            if (balance.getUnpaidDays() < days) {
+                throw new RuntimeException("You have " + balance.getUnpaidDays() + " days");
+            }
+            balance.setUnpaidDays(balance.getUnpaidDays() - (int) days);
+        }
+
+        userBalanceRepository.save(balance);
+
+        // Cambiar en Calendario a V
+        List<TurnAssigned> turns = turnAssignedRepository
+                .findByUserIdAndDateBetween(
+                        userId,
+                        existingApplication.getStartDate(),
+                        existingApplication.getEndDate());
+
+        Turns changeTurn = turnRepository.findByName("Vacaciones")
+                .orElseThrow(() -> new RuntimeException("Turn Vacaciones not found"));
+
+        for (TurnAssigned t : turns) {
+            t.setTurn(changeTurn);
+        }
+
+        turnAssignedRepository.saveAll(turns);
+    }
+
+    public void applyHoursEffect(Application existingApplication) {
+
+        Long userId = existingApplication.getUser().getId();
+        int year = existingApplication.getDate().getYear();
+        double hours = existingApplication.getHoursRequested();
+
+        UserBalance balance = userBalanceRepository
+                .findByUserIdAndYear(userId, year)
+                .orElseThrow();
+
+        if (balance.getHoursBalance() < hours) {
+            throw new RuntimeException("You have " + balance.getHoursBalance() + " hours");
+        }
+
+        balance.setHoursBalance(balance.getHoursBalance() - (int) hours);
+        userBalanceRepository.save(balance);
+
+        List<TurnAssigned> turns = turnAssignedRepository.findByUserIdAndDateBetween(
+                userId, existingApplication.getDate(), existingApplication.getDate());
+
+        for (TurnAssigned t : turns) {
+            String info = (t.getInfo() == null) ? "" : t.getInfo();
+            t.setInfo(info + " [Balances Hours: " + hours + "h]");
+        }
+
+        turnAssignedRepository.saveAll(turns);
+    }
+
+    public void applyChangeEffect(Application app) {
+
+        User user = app.getUser();
+        User affectedUser = app.getAffectedUser();
+        int totalDays = (int) ChronoUnit.DAYS.between(app.getStartDate(), app.getEndDate()) + 1;
+        int year = app.getStartDate().getYear();
+
+        // Si el turno que DA el afectado es Vacaciones, se le devuelven (porque ya no las gasta)
+        if (app.getTurnGive().getName().equalsIgnoreCase("Vacaciones")) {
+            updateBalance(user.getId(), year, totalDays);
+        }
+        // Si el turno que RECIBE el solicitante es Vacaciones, se le restan a él
+        if (app.getTurnReceive().getName().equalsIgnoreCase("Vacaciones")) {
+            updateBalance(user.getId(), year, -totalDays);
+        }
+
+        // Si lo que Kipi RECIBE son Vacaciones -> SE LE QUITAN (Resta)
+        if (app.getTurnGive().getName().trim().equalsIgnoreCase("Vacaciones")) {
+            updateBalance(affectedUser.getId(), year, -totalDays);
+        }
+        // Si lo que Kipi SUELTA son Vacaciones -> SE LE DEVUELVEN (Suma)
+        if (app.getTurnReceive().getName().trim().equalsIgnoreCase("Vacaciones")) {
+            updateBalance(affectedUser.getId(), year, totalDays);
+        }
+
+        // --- INTERCAMBIO EN CALENDARIO ---
+        // (Esto se queda igual porque solo mueves las piezas)
+        List<TurnAssigned> userTurns = turnAssignedRepository.findByUserIdAndDateBetween(user.getId(), app.getStartDate(), app.getEndDate());
+        List<TurnAssigned> affectedTurns = turnAssignedRepository.findByUserIdAndDateBetween(affectedUser.getId(), app.getStartDate(), app.getEndDate());
+
+        for (TurnAssigned ut : userTurns) ut.setTurn(app.getTurnReceive());
+        for (TurnAssigned at : affectedTurns) at.setTurn(app.getTurnGive());
+
+        turnAssignedRepository.saveAll(userTurns);
+        turnAssignedRepository.saveAll(affectedTurns);
+
+    }
+
+    private void updateBalance(Long userId, int year, int amount) {
+        UserBalance balance = userBalanceRepository.findByUserIdAndYear(userId, year)
+                .orElseThrow(() -> new RuntimeException("Balance no encontrado para usuario: " + userId));
+
+        int currentDays = balance.getVacationDays();
+
+        balance.setVacationDays(balance.getVacationDays() + amount);
+        userBalanceRepository.saveAndFlush(balance);
     }
 
     // DELETE
     public void deleteApp(Long id) throws ApplicationNotFoundException {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
-        ;
 
         applicationRepository.deleteById(id);
     }

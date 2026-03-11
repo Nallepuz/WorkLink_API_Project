@@ -25,6 +25,8 @@ public class TurnAssigned {
     @CreationTimestamp
     @Column(name = "created_date")
     private LocalDateTime created;
+    @Column(name = "info")
+    private String info;
 
     // RELACIÓN CON EL USUARIO ASIGNADO AL TURNO
     @ManyToOne
