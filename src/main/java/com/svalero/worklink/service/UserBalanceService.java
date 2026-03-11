@@ -25,6 +25,7 @@ public class UserBalanceService {
     @Autowired
     ModelMapper modelMapper;
 
+
     // GET
     public List<UserBalanceOutDto> findAll(Long userId, Integer year) throws UserBalanceNotFoundException {
 
@@ -49,7 +50,12 @@ public class UserBalanceService {
     public UserBalanceOutDto findById(Long id) throws UserBalanceNotFoundException {
         UserBalance user = userBalanceRepository.findById(id)
                 .orElseThrow(() -> new UserBalanceNotFoundException("User Balance not found"));
-        return modelMapper.map(user, UserBalanceOutDto.class);
+        modelMapper.map(user, UserBalanceOutDto.class);
+
+        UserBalanceOutDto saved = modelMapper.map(user, UserBalanceOutDto.class);
+        saved.setUserId(user.getUser().getId());
+        saved.setUserName(user.getUser().getName());
+        return saved;
     }
 
     // POST
@@ -60,10 +66,13 @@ public class UserBalanceService {
 
         UserBalance newUser = modelMapper.map(userBalance, UserBalance.class);
         newUser.setUser(user);
+        UserBalance existingUserBalance = userBalanceRepository.save(newUser);
 
-        UserBalance savedUserBalance = userBalanceRepository.save(newUser);
+        UserBalanceOutDto savedUserBalance = modelMapper.map(existingUserBalance, UserBalanceOutDto.class);
+        savedUserBalance.setUserId(existingUserBalance.getUser().getId());
+        savedUserBalance.setUserName(existingUserBalance.getUser().getName());
 
-        return modelMapper.map(savedUserBalance, UserBalanceOutDto.class);
+        return savedUserBalance;
     }
 
     // PUT
@@ -76,17 +85,20 @@ public class UserBalanceService {
 
         modelMapper.map(user, existingUser);
         existingUser.setUser(userId);
-
         UserBalance savedUser = userBalanceRepository.save(existingUser);
 
-        return modelMapper.map(savedUser, UserBalanceOutDto.class);
+        UserBalanceOutDto savedUserBalance = modelMapper.map(savedUser, UserBalanceOutDto.class);
+        savedUserBalance.setUserId(savedUser.getUser().getId());
+        savedUserBalance.setUserName(savedUser.getUser().getName());
+
+        return savedUserBalance;
     }
 
     // DELETE
     public void deleteUser(Long id) throws UserBalanceNotFoundException {
-       userBalanceRepository.findById(id)
+        userBalanceRepository.findById(id)
                 .orElseThrow(() -> new UserBalanceNotFoundException("User Balance not found"));
 
-       userBalanceRepository.deleteById(id);
+        userBalanceRepository.deleteById(id);
     }
 }

@@ -24,6 +24,7 @@ public class UserBalance {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
+
     @Column(nullable = false)
     private int year;
     @Column(name = "vacation_days", nullable = false)

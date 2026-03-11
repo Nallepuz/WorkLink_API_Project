@@ -1,5 +1,6 @@
 package com.svalero.worklink.Dto;
 
+import com.svalero.worklink.model.ApplicationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,10 +13,13 @@ import java.time.LocalTime;
 @AllArgsConstructor
 public class ApplicationInDto {
 
+    private ApplicationStatus status;
+
     private Long applicationTypeId;
     private Long userId;
-    private Long resolverId;
     private String comments;
+    private Long resolverId;
+    private String resolverComments;
 
     // DÍAS
     private LocalDate startDate;

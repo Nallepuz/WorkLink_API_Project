@@ -29,16 +29,18 @@ public class AppConfig {
 
         // UserBalance -> UserBalanceDto
         modelMapper.typeMap(UserBalance.class, UserBalanceOutDto.class)
-                .addMappings(m -> m.map(
-                        src -> src.getUser().getId(),
-                        UserBalanceOutDto::setUserId
-                ));
+                .addMappings(m -> {
+                    m.map(src -> src.getUser().getId(), UserBalanceOutDto::setUserId);
+                    m.map(src -> src.getUser().getName(), UserBalanceOutDto::setUserName);
+                });
 
         // Assigned -> AssignedDto
         modelMapper.typeMap(TurnAssigned.class, TurnAssignedOutDto.class)
                 .addMappings(m -> {
                     m.map(src -> src.getUser().getId(), TurnAssignedOutDto::setUserId);
                     m.map(src -> src.getTurn().getId(), TurnAssignedOutDto::setTurnId);
+                    m.map(src -> src.getUser().getName(), TurnAssignedOutDto::setUserName);
+                    m.map(src -> src.getTurn().getName(), TurnAssignedOutDto::setTurnName);
                 });
 
         // Application -> ApplicationDto

@@ -10,6 +10,6 @@ public interface TurnRepository extends CrudRepository<Turns, Long> {
 
     List<Turns> findAll();
     Optional<Turns> findById(Long id);
-    List<Turns> findByName(String name);
+    Optional<Turns> findByName(String name);
     List<Turns> findByNights(Boolean nights);
 }
