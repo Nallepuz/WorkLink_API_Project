@@ -14,4 +14,5 @@ public class ApplicationTypeInDto {
     private String name;
     private String description;
     private Boolean affectsBalance;
+    private Boolean active;
 }
