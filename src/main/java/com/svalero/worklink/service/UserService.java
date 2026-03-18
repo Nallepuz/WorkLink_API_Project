@@ -1,5 +1,7 @@
 package com.svalero.worklink.service;
 
+import com.svalero.worklink.Dto.LoginInDto;
+import com.svalero.worklink.Dto.LoginOutDto;
 import com.svalero.worklink.Dto.UserInDto;
 import com.svalero.worklink.Dto.UserOutDto;
 import com.svalero.worklink.exception.EmailAlreadyExistException;
@@ -83,6 +85,18 @@ public class UserService {
         userBalanceRepository.save(userBalance);
 
         return userRepository.save(newUser);
+    }
+
+    public LoginOutDto login(LoginInDto login) throws UserNotFoundException {
+
+        User user = userRepository.findByEmail(login.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Invalid credentials"));
+
+        if (!user.getPassword().equals(login.getPassword())) {
+            throw new UserNotFoundException("Invalid credentials");
+        }
+
+        return modelMapper.map(user, LoginOutDto.class);
     }
 
     // PUT

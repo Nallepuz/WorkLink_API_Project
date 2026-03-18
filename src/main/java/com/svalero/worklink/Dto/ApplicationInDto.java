@@ -14,12 +14,12 @@ import java.time.LocalTime;
 public class ApplicationInDto {
 
     private ApplicationStatus status;
-
     private Long applicationTypeId;
     private Long userId;
     private String comments;
     private Long resolverId;
     private String resolverComments;
+
 
     // DÍAS
     private LocalDate startDate;

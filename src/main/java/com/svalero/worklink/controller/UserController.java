@@ -1,5 +1,7 @@
 package com.svalero.worklink.controller;
 
+import com.svalero.worklink.Dto.LoginInDto;
+import com.svalero.worklink.Dto.LoginOutDto;
 import com.svalero.worklink.Dto.UserInDto;
 import com.svalero.worklink.Dto.UserOutDto;
 import com.svalero.worklink.exception.ErrorResponse;
@@ -44,6 +46,14 @@ public class UserController {
     public ResponseEntity<User> addUser(@Valid @RequestBody UserInDto user) throws UserNotFoundException {
         User newUser = userService.addUser(user);
         return new ResponseEntity<User>(newUser, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginOutDto> login(@RequestBody LoginInDto login) throws UserNotFoundException {
+
+        LoginOutDto user = userService.login(login);
+
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/users/{id}")

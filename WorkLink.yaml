@@ -1,0 +1,2521 @@
+openapi: 3.0.3
+info:
+  title: WorkLink API
+  description: API de la aplicación de gestión WorkLink.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      summary: Devuelve la lista de usuarios
+      description: |
+        Devuelve una lista con todos los usuarios disponibles.
+
+        Se permite filtrar usuarios por varios campos:
+          - **email**: filtra por correo electrónico
+          - **name**: filtra por nombre
+          - **active**: filtra por si el usuario está activo
+      parameters:
+        - name: email
+          in: query
+          description: Filtra por correo electrónico del usuario
+          required: false
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: Filtra por nombre del usuario
+          required: false
+          schema:
+            type: string
+        - name: active
+          in: query
+          description: Filtra según si el usuario está activo o no
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de usuarios devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Users
+      summary: Registra un usuario
+      description: Registra un nuevo usuario y lo relaciona con su rol correspondiente
+      requestBody:
+        required: true
+        description: Datos del nuevo usuario
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInDto'
+            example:
+              name: Pedro
+              email: pedro@worklink.com
+              password: "12345678"
+              phone: "123123123"
+              active: true
+              rolId: 2
+      responses:
+        '201':
+          description: Usuario registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '409':
+          description: Conflicto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conflict'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Devuelve un usuario por su id
+      description: Devuelve un usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del usuario
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOutDto'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - Users
+      summary: Modifica un usuario por su id
+      description: Modifica los datos de un usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del usuario
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInDto'
+            example:
+              name: Pedro
+              email: pedro@email.com
+              password: "12345678"
+              phone: "999999999"
+              active: true
+              rolId: 2
+      responses:
+        '200':
+          description: Usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '409':
+          description: Conflicto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conflict'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Users
+      summary: Elimina un usuario por su id
+      description: Elimina un usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del usuario
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Usuario eliminado correctamente
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: Inicia sesión de usuario
+      description: Autentica a un usuario mediante su correo electrónico y contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginInDto'
+            example:
+              email: pedro@worklink.com
+              password: "contraseña1234"
+      responses:
+        '200':
+          description: Inicio de sesión realizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Usuario no encontrado o credenciales no válidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /userBalances:
+    get:
+      tags:
+        - UserBalances
+      summary: Devuelve la lista de balances de usuario
+      description: |
+        Devuelve una lista con todos los balances de usuario disponibles.
+
+        Se permite filtrar balances por varios campos:
+          - **user_id**: filtra por identificador del usuario
+          - **year**: filtra por año
+      parameters:
+        - name: user_id
+          in: query
+          required: false
+          description: Filtra por identificador del usuario
+          schema:
+            type: integer
+            format: int64
+        - name: year
+          in: query
+          required: false
+          description: Filtra por año del balance
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: Lista de balances devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserBalanceOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - UserBalances
+      summary: Registra un balance de usuario
+      description: Registra un nuevo balance asociado a un usuario
+      requestBody:
+        required: true
+        description: Datos del nuevo balance de usuario
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBalanceInDto'
+            example:
+              userId: 2
+              year: 2026
+              vacationDays: 30
+              excessDays: 5
+              unpaidDays: 2
+              hoursBalance: 24.0
+      responses:
+        '201':
+          description: Balance de usuario registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalanceOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /userBalances/{id}:
+    get:
+      tags:
+        - UserBalances
+      summary: Devuelve un balance de usuario por su id
+      description: Devuelve un balance de usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del balance de usuario
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Balance de usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalanceOutDto'
+        '404':
+          description: Balance de usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - UserBalances
+      summary: Modifica un balance de usuario por su id
+      description: Modifica los datos de un balance de usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del balance de usuario
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBalanceInDto'
+            example:
+              userId: 2
+              year: 2026
+              vacationDays: 25
+              excessDays: 4
+              unpaidDays: 1
+              hoursBalance: 20.0
+      responses:
+        '200':
+          description: Balance de usuario actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserBalanceOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Balance de usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - UserBalances
+      summary: Elimina un balance de usuario por su id
+      description: Elimina un balance de usuario específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del balance de usuario
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Balance de usuario eliminado correctamente
+        '404':
+          description: Balance de usuario no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /rol:
+    get:
+      tags:
+        - Roles
+      summary: Devuelve la lista de roles
+      description: |
+        Devuelve una lista con todos los roles disponibles.
+
+        Se permite filtrar roles por varios campos:
+          - **name**: filtra por nombre del rol
+          - **accessLevel**: filtra por nivel de acceso
+          - **active**: filtra por si el rol está activo
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Filtra por nombre del rol
+          schema:
+            type: string
+        - name: accessLevel
+          in: query
+          required: false
+          description: Filtra por nivel de acceso del rol
+          schema:
+            type: number
+            format: float
+        - name: active
+          in: query
+          required: false
+          description: Filtra según si el rol está activo o no
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de roles devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RolOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+    post:
+      tags:
+        - Roles
+      summary: Registra un rol
+      description: Registra un nuevo rol en el sistema
+      requestBody:
+        required: true
+        description: Datos del nuevo rol
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolInDto'
+            example:
+              name: Encargado
+              description: Responsable de supervisión y gestión
+              accessLevel: 2.0
+      responses:
+        '201':
+          description: Rol registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /rol/{id}:
+    get:
+      tags:
+        - Roles
+      summary: Devuelve un rol por su id
+      description: Devuelve un rol específico a partir de su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del rol
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Rol encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolOutDto'
+        '404':
+          description: Rol no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - Roles
+      summary: Modifica un rol por su id
+      description: Modifica los datos de un rol específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del rol
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RolInDto'
+            example:
+              name: Encargado
+              description: Responsable de supervisión y coordinación
+              accessLevel: 2.5
+      responses:
+        '200':
+          description: Rol actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RolOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Rol no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Roles
+      summary: Elimina un rol por su id
+      description: Elimina un rol específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del rol
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Rol eliminado correctamente
+        '404':
+          description: Rol no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /turns:
+    get:
+      tags:
+        - Turns
+      summary: Devuelve la lista de turnos
+      description: |
+        Devuelve una lista con todos los turnos disponibles.
+
+        Se permite filtrar turnos por varios campos:
+          - **name**: filtra por nombre del turno
+          - **color_hex**: filtra por color del turno
+          - **nights**: filtra si el turno es nocturno
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Filtra por nombre del turno
+          schema:
+            type: string
+        - name: color_hex
+          in: query
+          required: false
+          description: Filtra por color hexadecimal del turno
+          schema:
+            type: string
+        - name: nights
+          in: query
+          required: false
+          description: Filtra según si el turno es nocturno
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de turnos devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TurnOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Turns
+      summary: Registra un turno
+      description: Registra un nuevo turno en el sistema
+      requestBody:
+        required: true
+        description: Datos del nuevo turno
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnInDto'
+            example:
+              name: Turno mañana
+              description: Turno de trabajo de mañana
+              workStart: "08:00:00"
+              workEnd: "16:00:00"
+              colorHex: "#4CAF50"
+              nights: false
+              active: true
+      responses:
+        '201':
+          description: Turno registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /turns/{id}:
+    get:
+      tags:
+        - Turns
+      summary: Devuelve un turno por su id
+      description: Devuelve un turno específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del turno
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Turno encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnOutDto'
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - Turns
+      summary: Modifica un turno por su id
+      description: Modifica los datos de un turno específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del turno
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnInDto'
+            example:
+              name: Turno tarde
+              description: Turno de trabajo de tarde
+              workStart: "16:00:00"
+              workEnd: "00:00:00"
+              colorHex: "#FF9800"
+              nights: true
+              active: true
+      responses:
+        '200':
+          description: Turno actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Turns
+      summary: Elimina un turno por su id
+      description: Elimina un turno específico mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del turno
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Turno eliminado correctamente
+        '404':
+          description: Turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /assigned:
+    get:
+      tags:
+        - TurnAssigned
+      summary: Devuelve la lista de asignaciones de turnos
+      description: |
+        Devuelve una lista con todas las asignaciones de turnos disponibles.
+
+        Se permite filtrar asignaciones por varios campos:
+          - **user_id**: filtra por identificador del usuario
+          - **turn_id**: filtra por identificador del turno
+      parameters:
+        - name: user_id
+          in: query
+          required: false
+          description: Filtra por identificador del usuario
+          schema:
+            type: integer
+            format: int64
+        - name: turn_id
+          in: query
+          required: false
+          description: Filtra por identificador del turno
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de asignaciones devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TurnAssignedOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - TurnAssigned
+      summary: Registra una asignación de turno
+      description: Registra una nueva asignación de turno asociada a un usuario y un turno
+      requestBody:
+        required: true
+        description: Datos de la nueva asignación de turno
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnAssignedInDto'
+            example:
+              date: "2026-03-12"
+              info: Turno asignado manualmente
+              userId: 2
+              turnId: 1
+      responses:
+        '201':
+          description: Asignación de turno registrada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnAssignedOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Usuario o turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /assigned/{id}:
+    get:
+      tags:
+        - TurnAssigned
+      summary: Devuelve una asignación de turno por su id
+      description: Devuelve una asignación de turno específica mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la asignación de turno
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Asignación de turno encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnAssignedOutDto'
+        '404':
+          description: Asignación de turno no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - TurnAssigned
+      summary: Modifica una asignación de turno por su id
+      description: Modifica los datos de una asignación de turno específica mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la asignación de turno
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnAssignedInDto'
+            example:
+              date: "2026-03-13"
+              info: Cambio manual de turno
+              userId: 2
+              turnId: 2
+      responses:
+        '200':
+          description: Asignación de turno actualizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnAssignedOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Asignación, usuario o turno no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - TurnAssigned
+      summary: Elimina una asignación de turno por su id
+      description: Elimina una asignación de turno específica mediante su identificador único
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la asignación de turno
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Asignación de turno eliminada correctamente
+        '404':
+          description: Asignación de turno no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /applicationType:
+    get:
+      tags:
+        - ApplicationType
+      summary: Devuelve la lista de tipos de solicitud
+      description: |
+        Devuelve una lista con todos los tipos de solicitud.
+
+        Se permite filtrar por:
+          - **name**: nombre del tipo
+          - **active**: estado activo
+      parameters:
+        - name: name
+          in: query
+          required: false
+          description: Filtra por nombre del tipo
+          schema:
+            type: string
+        - name: active
+          in: query
+          required: false
+          description: Filtra por estado activo
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Lista de tipos devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationTypeOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - ApplicationType
+      summary: Registra un tipo de solicitud
+      description: Registra un nuevo tipo de solicitud en el sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationTypeInDto'
+            example:
+              name: Vacaciones
+              description: Solicitud de vacaciones
+              affectsBalance: true
+              active: true
+      responses:
+        '201':
+          description: Tipo de solicitud registrado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationTypeOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /applicationType/{id}:
+    get:
+      tags:
+        - ApplicationType
+      summary: Devuelve un tipo de solicitud por id
+      description: Devuelve un tipo de solicitud específico mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del tipo de solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Tipo de solicitud encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationTypeOutDto'
+        '404':
+          description: Tipo de solicitud no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - ApplicationType
+      summary: Modifica un tipo de solicitud
+      description: Modifica los datos de un tipo de solicitud existente
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del tipo de solicitud
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationTypeInDto'
+            example:
+              name: Baja médica
+              description: Solicitud por enfermedad
+              affectsBalance: false
+              active: true
+      responses:
+        '200':
+          description: Tipo de solicitud actualizado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationTypeOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Tipo de solicitud no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - ApplicationType
+      summary: Elimina un tipo de solicitud
+      description: Elimina un tipo de solicitud mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador del tipo de solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Tipo de solicitud eliminado correctamente
+        '404':
+          description: Tipo de solicitud no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+  /application:
+    get:
+      tags:
+        - Applications
+      summary: Devuelve la lista de solicitudes
+      description: |
+        Devuelve una lista con todas las solicitudes.
+
+        Se permite filtrar por:
+          - **status**: estado de la solicitud
+          - **user_id**: identificador del usuario solicitante
+      parameters:
+        - name: status
+          in: query
+          required: false
+          description: Filtra por estado de la solicitud
+          schema:
+            type: string
+        - name: user_id
+          in: query
+          required: false
+          description: Filtra por identificador del usuario solicitante
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de solicitudes devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      tags:
+        - Applications
+      summary: Registra una nueva solicitud
+      description: Crea una nueva solicitud en el sistema
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInDto'
+            example:
+              applicationTypeId: 1
+              userId: 5
+              comments: Solicito vacaciones por necesidad personal
+              startDate: "2026-03-09"
+              endDate: "2026-03-12"
+      responses:
+        '201':
+          description: Solicitud creada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationOutDto'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Usuario, tipo de solicitud, turno o usuario afectado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /application/days/{id}:
+    get:
+      tags:
+        - Applications
+      summary: Devuelve una solicitud de días por su id
+      description: Devuelve una solicitud de tipo días mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Solicitud de días encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationDaysOutDto'
+        '400':
+          description: La solicitud no corresponde a un tipo de días
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /application/hours/{id}:
+    get:
+      tags:
+        - Applications
+      summary: Devuelve una solicitud de horas por su id
+      description: Devuelve una solicitud de tipo bolsa de horas mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Solicitud de horas encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationHoursOutDto'
+        '400':
+          description: La solicitud no corresponde a un tipo de horas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /application/change/{id}:
+    get:
+      tags:
+        - Applications
+      summary: Devuelve una solicitud de cambio de turno por su id
+      description: Devuelve una solicitud de tipo cambio de turno mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Solicitud de cambio encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationChangeOutDto'
+        '400':
+          description: La solicitud no corresponde a un tipo de cambio de turno
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /application/user/{userId}:
+    get:
+      tags:
+        - Applications
+      summary: Devuelve las solicitudes de un usuario
+      description: Devuelve todas las solicitudes creadas por un usuario específico
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Identificador del usuario
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Lista de solicitudes del usuario devuelta correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ApplicationOutDto'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  /application/{id}:
+    put:
+      tags:
+        - Applications
+      summary: Resuelve una solicitud
+      description: Actualiza el estado de una solicitud y aplica sus efectos si es aprobada
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la solicitud
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationInDto'
+            example:
+              applicationTypeId: 1
+              userId: 5
+              comments: Solicito vacaciones por necesidad personal
+              status: APPROVED
+              resolverId: 2
+              resolverComments: Solicitud aprobada
+      responses:
+        '200':
+          description: Solicitud actualizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationOutDto'
+        '400':
+          description: Petición inválida
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Solicitud o usuario resolutor no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - Applications
+      summary: Elimina una solicitud
+      description: Elimina una solicitud existente mediante su identificador
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identificador de la solicitud
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Solicitud eliminada correctamente
+        '404':
+          description: Solicitud no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
+components:
+  schemas:
+    User:
+      allOf:
+        - $ref: '#/components/schemas/UserInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del usuario
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del usuario
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del usuario
+          required:
+            - id
+            - created
+            - updated
+      example:
+        id: 3
+        name: Nero
+        email: nero@worklink.com
+        password: "1234"
+        phone: "123456789"
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+        active: true
+        rolId: 1
+    UserInDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        password:
+          type: string
+          description: Contraseña del usuario
+        phone:
+          type: string
+          description: Número de teléfono del usuario
+        active:
+          type: boolean
+          description: Indica si el usuario sigue activo en la empresa
+        rolId:
+          type: integer
+          format: int64
+          description: Identificador del rol al que pertenece el usuario
+      required:
+        - name
+        - email
+        - password
+        - phone
+        - active
+        - rolId
+      example:
+        name: Dante
+        email: dante@worklink.com
+        password: "7777"
+        phone: "666666666"
+        active: true
+        rolId: 1
+    UserOutDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del usuario
+        name:
+          type: string
+          description: Nombre del usuario
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario
+        phone:
+          type: string
+          description: Número de teléfono del usuario
+        created:
+          type: string
+          format: date-time
+          description: Fecha de creación del usuario
+        updated:
+          type: string
+          format: date-time
+          description: Fecha de actualización del usuario
+        active:
+          type: boolean
+          description: Indica si el usuario sigue activo en la empresa
+        rolId:
+          type: integer
+          format: int64
+          description: Identificador del rol al que pertenece el usuario
+      required:
+        - id
+        - name
+        - email
+        - phone
+        - created
+        - updated
+        - active
+        - rolId
+      example:
+        id: 2
+        name: Vergil
+        email: vergil@worklink.com
+        phone: "666666666"
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+        active: true
+        rolId: 1
+    LoginInDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario que inicia sesión
+        password:
+          type: string
+          description: Contraseña del usuario que inicia sesión
+      required:
+        - email
+        - password
+      example:
+        email: dante@worklink.com
+        password: Jackpot666
+    LoginOutDto:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo electrónico del usuario autenticado
+        password:
+          type: string
+          description: Contraseña del usuario autenticado
+      required:
+        - email
+        - password
+      example:
+        email: dante@worklink.com
+        password: "Jackpot666"
+
+
+    UserBalance:
+      allOf:
+        - $ref: '#/components/schemas/UserBalanceInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del balance de un usuario en un año
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del balance del usuario
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del balance del usuario
+          required:
+            - id
+            - created
+            - updated
+      example:
+        id: 1
+        userId: 3
+        year: 2026
+        vacationDays: 40
+        excessDays: 2
+        unpaidDays: 2
+        hoursBalance: 24
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+    UserBalanceInDto:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario
+        year:
+          type: integer
+          description: Año del balance del usuario
+        vacationDays:
+          type: integer
+          description: Número de días de vacaciones del usuario
+        excessDays:
+          type: integer
+          description: Número de días de exceso del usuario
+        unpaidDays:
+          type: integer
+          description: Número de días no retribuidos del usuario
+        hoursBalance:
+          type: number
+          format: float
+          description: Número de bolsa de horas restante del usuario
+      required:
+        - userId
+        - year
+        - vacationDays
+        - excessDays
+        - unpaidDays
+        - hoursBalance
+      example:
+        userId: 1
+        year: 2026
+        vacationDays: 40
+        excessDays: 2
+        unpaidDays: 2
+        hoursBalance: 24
+    UserBalanceOutDto:
+      allOf:
+        - $ref: '#/components/schemas/UserBalanceInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del balance de un usuario en un año
+            userName:
+              type: string
+              description: Nombre del usuario al que pertenece el balance
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del balance del usuario
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del balance del usuario
+          required:
+            - id
+            - created
+            - updated
+      example:
+        id: 1
+        userId: 3
+        userName: Nero
+        year: 2026
+        vacationDays: 40
+        excessDays: 2
+        unpaidDays: 2
+        hoursBalance: 24
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+
+    Rol:
+      allOf:
+        - $ref: '#/components/schemas/RolInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del rol
+            active:
+              type: boolean
+              description: Indica si el rol está activo o no
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del rol
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del rol
+          required:
+            - id
+            - active
+            - created
+            - updated
+      example:
+        id: 2
+        name: Empleado
+        description: Trabajador con el rol asignado de empleado
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+        accessLevel: 1.0
+        active: true
+    RolInDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del rol
+        description:
+          type: string
+          description: Descripción detallada del rol
+        accessLevel:
+          type: number
+          format: float
+          description: Nivel de acceso otorgado al rol
+      required:
+        - name
+        - description
+        - accessLevel
+      example:
+        name: Admin
+        description: Trabajador con el rol asignado de administrador
+        accessLevel: 3.0
+    RolOutDto:
+      allOf:
+        - $ref: '#/components/schemas/RolInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del rol
+            active:
+              type: boolean
+              description: Indica si el rol está activo o no
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del rol
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del rol
+          required:
+            - id
+            - active
+            - created
+            - updated
+      example:
+        id: 1
+        name: Admin
+        description: Trabajador con el rol asignado de administrador
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+        accessLevel: 3.0
+        active: true
+
+    Turns:
+      allOf:
+        - $ref: '#/components/schemas/TurnInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del turno
+            active:
+              type: boolean
+              description: Indica si el turno sigue habilitado o no
+          required:
+            - id
+            - active
+      example:
+        id: 1
+        name: Mañana
+        description: Turno de mañanas
+        workStart: "06:00:00"
+        workEnd: "14:00:00"
+        colorHex: "#F5CC27"
+        nights: false
+        active: true
+    TurnInDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del turno
+        description:
+          type: string
+          description: Descripción del turno de trabajo
+        workStart:
+          type: string
+          description: Hora de comienzo del turno en formato HH:mm:ss
+          example: "06:00:00"
+        workEnd:
+          type: string
+          description: Hora de finalización del turno en formato HH:mm:ss
+          example: "14:00:00"
+        colorHex:
+          type: string
+          description: Color hexadecimal asociado al turno
+        nights:
+          type: boolean
+          description: Indica si el turno tiene plus de nocturnidad
+      required:
+        - name
+        - description
+        - workStart
+        - workEnd
+        - colorHex
+        - nights
+      example:
+        name: Tarde
+        description: Turno de tardes
+        workStart: "14:00:00"
+        workEnd: "22:00:00"
+        colorHex: "#F562A4"
+        nights: false
+    TurnOutDto:
+      allOf:
+        - $ref: '#/components/schemas/TurnInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del turno
+            active:
+              type: boolean
+              description: Indica si el turno sigue habilitado o no
+          required:
+            - id
+            - active
+      example:
+        id: 3
+        name: Noche
+        description: Turno de noches
+        workStart: "22:00:00"
+        workEnd: "06:00:00"
+        colorHex: "#0E8262"
+        nights: true
+        active: true
+
+    TurnAssigned:
+      allOf:
+        - $ref: '#/components/schemas/TurnAssignedInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del turno asignado
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación de la asignación
+          required:
+            - id
+            - created
+      example:
+        id: 1
+        date: "2025-05-30"
+        created: "2025-01-01T10:00:00"
+        info: Horas concedidas 2h
+        userId: 1
+        turnId: 3
+    TurnAssignedInDto:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          description: Fecha en la que se asignará el turno
+        info:
+          type: string
+          description: Información adicional de la asignación
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario
+        turnId:
+          type: integer
+          format: int64
+          description: Identificador del turno
+      required:
+        - date
+        - userId
+        - turnId
+      example:
+        date: "2025-10-10"
+        info: Asignación manual
+        userId: 1
+        turnId: 3
+    TurnAssignedOutDto:
+      allOf:
+        - $ref: '#/components/schemas/TurnAssignedInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del turno asignado
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación de la asignación
+            userName:
+              type: string
+              description: Nombre del usuario asignado al turno
+            turnName:
+              type: string
+              description: Nombre del turno asignado
+          required:
+            - id
+            - created
+      example:
+        id: 1
+        date: "2025-05-30"
+        created: "2025-01-01T10:00:00"
+        userId: 1
+        userName: Carlos
+        turnId: 3
+        turnName: Noche
+        info: Sin comentarios
+
+    ApplicationInDto:
+      type: object
+      properties:
+        applicationTypeId:
+          type: integer
+          format: int64
+          description: Identificador del tipo de solicitud
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario solicitante
+        comments:
+          type: string
+          description: Comentarios del solicitante
+        startDate:
+          type: string
+          format: date
+          description: Fecha de inicio de la solicitud por días
+        endDate:
+          type: string
+          format: date
+          description: Fecha de fin de la solicitud por días
+        hoursRequested:
+          type: number
+          format: float
+          description: Horas solicitadas
+        date:
+          type: string
+          format: date
+          description: Día de la solicitud por horas
+        fromTime:
+          type: string
+          description: Hora de inicio en formato HH:mm:ss
+        toTime:
+          type: string
+          description: Hora de fin en formato HH:mm:ss
+        affectedUserId:
+          type: integer
+          format: int64
+          description: Identificador del usuario afectado en el cambio de turno
+        turnGiveId:
+          type: integer
+          format: int64
+          description: Identificador del turno que entrega
+        turnReceiveId:
+          type: integer
+          format: int64
+          description: Identificador del turno que recibe
+        status:
+          type: string
+          description: Estado de la solicitud
+        resolverId:
+          type: integer
+          format: int64
+          description: Identificador del usuario que resuelve la solicitud
+        resolverComments:
+          type: string
+          description: Comentarios del usuario que resuelve la solicitud
+      required:
+        - applicationTypeId
+        - userId
+        - comments
+      example:
+        applicationTypeId: 1
+        userId: 5
+        comments: Solicito vacaciones por necesidad personal
+        startDate: "2026-03-09"
+        endDate: "2026-03-09"
+    ApplicationOutDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la solicitud
+        status:
+          type: string
+          description: Estado actual de la solicitud
+        applicationTypeId:
+          type: integer
+          format: int64
+          description: Identificador del tipo de solicitud
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario solicitante
+        created:
+          type: string
+          format: date-time
+          description: Fecha de creación de la solicitud
+        resolved:
+          type: string
+          format: date-time
+          description: Fecha de resolución de la solicitud
+        comments:
+          type: string
+          description: Comentarios del solicitante
+      required:
+        - id
+        - status
+        - applicationTypeId
+        - userId
+        - created
+        - comments
+      example:
+        id: 10
+        status: PENDING
+        applicationTypeId: 1
+        userId: 5
+        created: "2026-03-09T10:00:00"
+        comments: Solicito vacaciones por necesidad personal
+    ApplicationDaysOutDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la solicitud
+        status:
+          type: string
+          description: Estado actual de la solicitud
+        applicationTypeId:
+          type: integer
+          format: int64
+          description: Identificador del tipo de solicitud
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario solicitante
+        created:
+          type: string
+          format: date-time
+          description: Fecha de creación de la solicitud
+        comments:
+          type: string
+          description: Comentarios del solicitante
+        startDate:
+          type: string
+          format: date
+          description: Fecha de inicio de la solicitud
+        endDate:
+          type: string
+          format: date
+          description: Fecha de fin de la solicitud
+        resolverId:
+          type: integer
+          format: int64
+          description: Identificador del usuario que resuelve la solicitud
+        resolved:
+          type: string
+          format: date-time
+          description: Fecha de resolución de la solicitud
+        resolverComments:
+          type: string
+          description: Comentarios del usuario que resuelve la solicitud
+      required:
+        - id
+        - status
+        - applicationTypeId
+        - userId
+        - created
+        - comments
+        - startDate
+        - endDate
+      example:
+        id: 11
+        status: APPROVED
+        applicationTypeId: 1
+        userId: 5
+        created: "2026-03-09T10:00:00"
+        comments: Solicito vacaciones por necesidad personal
+        startDate: "2026-03-15"
+        endDate: "2026-03-18"
+        resolverId: 2
+        resolved: "2026-03-10T12:30:00"
+        resolverComments: Solicitud aprobada
+    ApplicationHoursOutDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la solicitud
+        status:
+          type: string
+          description: Estado actual de la solicitud
+        applicationTypeId:
+          type: integer
+          format: int64
+          description: Identificador del tipo de solicitud
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario solicitante
+        created:
+          type: string
+          format: date-time
+          description: Fecha de creación de la solicitud
+        comments:
+          type: string
+          description: Comentarios del solicitante
+        hoursRequested:
+          type: number
+          format: float
+          description: Horas solicitadas
+        date:
+          type: string
+          format: date
+          description: Día de la solicitud
+        fromTime:
+          type: string
+          description: Hora de inicio en formato HH:mm:ss
+        toTime:
+          type: string
+          description: Hora de fin en formato HH:mm:ss
+        resolverId:
+          type: integer
+          format: int64
+          description: Identificador del usuario que resuelve la solicitud
+        resolved:
+          type: string
+          format: date-time
+          description: Fecha de resolución de la solicitud
+        resolverComments:
+          type: string
+          description: Comentarios del usuario que resuelve la solicitud
+      required:
+        - id
+        - status
+        - applicationTypeId
+        - userId
+        - created
+        - comments
+        - hoursRequested
+        - date
+        - fromTime
+        - toTime
+      example:
+        id: 12
+        status: APPROVED
+        applicationTypeId: 4
+        userId: 5
+        created: "2026-03-09T10:00:00"
+        comments: Necesito 2 horas
+        hoursRequested: 2.0
+        date: "2026-03-10"
+        fromTime: "22:00:00"
+        toTime: "00:00:00"
+        resolverId: 2
+        resolved: "2026-03-10T12:30:00"
+        resolverComments: Solicitud aprobada
+    ApplicationChangeOutDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador de la solicitud
+        status:
+          type: string
+          description: Estado actual de la solicitud
+        applicationTypeId:
+          type: integer
+          format: int64
+          description: Identificador del tipo de solicitud
+        userId:
+          type: integer
+          format: int64
+          description: Identificador del usuario solicitante
+        created:
+          type: string
+          format: date-time
+          description: Fecha de creación de la solicitud
+        comments:
+          type: string
+          description: Comentarios del solicitante
+        startDate:
+          type: string
+          format: date
+          description: Fecha del cambio de turno
+        endDate:
+          type: string
+          format: date
+          description: Fecha del cambio de turno
+        affectedUserId:
+          type: integer
+          format: int64
+          description: Identificador del usuario afectado por el cambio
+        turnGiveId:
+          type: integer
+          format: int64
+          description: Identificador del turno que entrega
+        turnReceiveId:
+          type: integer
+          format: int64
+          description: Identificador del turno que recibe
+        resolverId:
+          type: integer
+          format: int64
+          description: Identificador del usuario que resuelve la solicitud
+        resolved:
+          type: string
+          format: date-time
+          description: Fecha de resolución de la solicitud
+        resolverComments:
+          type: string
+          description: Comentarios del usuario que resuelve la solicitud
+      required:
+        - id
+        - status
+        - applicationTypeId
+        - userId
+        - created
+        - comments
+        - startDate
+        - endDate
+        - affectedUserId
+        - turnGiveId
+        - turnReceiveId
+      example:
+        id: 13
+        status: REJECTED
+        applicationTypeId: 5
+        userId: 3
+        created: "2026-03-09T10:00:00"
+        comments: Quiero las noches de Alex
+        startDate: "2026-03-10"
+        endDate: "2026-03-10"
+        affectedUserId: 4
+        turnGiveId: 2
+        turnReceiveId: 3
+        resolverId: 2
+        resolved: "2026-03-10T12:30:00"
+        resolverComments: No se concede el cambio
+    ApplicationType:
+      allOf:
+        - $ref: '#/components/schemas/ApplicationTypeInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del tipo de solicitud
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del tipo de solicitud
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del tipo de solicitud
+          required:
+            - id
+            - created
+            - updated
+      example:
+        id: 2
+        name: Cambio de turno
+        description: Intercambio de turno con un compañero
+        affectsBalance: false
+        active: true
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+    ApplicationTypeInDto:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Nombre del tipo de solicitud
+        description:
+          type: string
+          description: Descripción de la solicitud
+        affectsBalance:
+          type: boolean
+          description: Indica si este tipo de solicitud afecta al balance del usuario
+        active:
+          type: boolean
+          description: Indica si el tipo de solicitud sigue activo o no
+      required:
+        - name
+        - description
+        - affectsBalance
+        - active
+      example:
+        name: Vacaciones
+        description: Vacaciones pagadas
+        affectsBalance: true
+        active: true
+    ApplicationTypeOutDto:
+      allOf:
+        - $ref: '#/components/schemas/ApplicationTypeInDto'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+              description: Identificador del tipo de solicitud
+            created:
+              type: string
+              format: date-time
+              description: Fecha de creación del tipo de solicitud
+            updated:
+              type: string
+              format: date-time
+              description: Fecha de actualización del tipo de solicitud
+          required:
+            - id
+            - created
+            - updated
+      example:
+        id: 3
+        name: Bolsa de horas
+        description: Solicitud de horas para un día concreto
+        affectsBalance: true
+        active: true
+        created: "2025-11-09T10:00:00"
+        updated: "2025-11-21T12:30:00"
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: Código de estado
+        title:
+          type: string
+          description: Tipo de error
+        message:
+          type: string
+          description: Mensaje de error
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+          description: Errores de validación por campo
+      required:
+        - code
+        - title
+        - message
+    InternalServerError:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        code: 500
+        title: internal-server-error
+        message: Error interno del servidor
+    BadRequest:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        code: 400
+        title: bad-request
+        message: Error de validación
+        errors:
+          email: El correo electrónico es obligatorio
+          password: La contraseña debe tener al menos 8 caracteres
+    Conflict:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        code: 409
+        title: conflict
+        message: Conflicto
+    NotFound:
+      allOf:
+        - $ref: '#/components/schemas/ErrorResponse'
+      example:
+        code: 404
+        title: not-found
+        message: Recurso no encontrado
