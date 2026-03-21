@@ -13,6 +13,7 @@ import com.svalero.worklink.model.UserBalance;
 import com.svalero.worklink.repository.RolRepository;
 import com.svalero.worklink.repository.UserBalanceRepository;
 import com.svalero.worklink.repository.UserRepository;
+import com.svalero.worklink.security.JwtService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ public class UserService {
     private RolRepository rolRepository;
     @Autowired
     private UserBalanceRepository userBalanceRepository;
+    @Autowired
+    private JwtService jwtService;
 
     // GET
     public List<UserOutDto> findAll(String email, String name, Boolean active) throws UserNotFoundException {
@@ -96,7 +99,16 @@ public class UserService {
             throw new UserNotFoundException("Invalid credentials");
         }
 
-        return modelMapper.map(user, LoginOutDto.class);
+        LoginOutDto loginOutDto = modelMapper.map(user, LoginOutDto.class);
+
+        if (user.getRol() != null) {
+            loginOutDto.setRoleId(user.getRol().getId());
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+        loginOutDto.setToken(token);
+
+        return loginOutDto;
     }
 
     // PUT

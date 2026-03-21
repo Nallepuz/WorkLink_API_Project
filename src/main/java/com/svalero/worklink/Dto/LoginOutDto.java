@@ -13,4 +13,5 @@ public class LoginOutDto {
     private String email;
     private Long roleId;
     private Boolean active;
+    private String token;
 }
