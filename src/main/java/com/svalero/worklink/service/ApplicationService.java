@@ -210,7 +210,7 @@ public class ApplicationService {
     }
 
     // PUT
-    public ApplicationOutDto modifyApplication(Long id, ApplicationInDto application) throws
+    public ApplicationOutDto modifyApplication(Long id, ApplicationPutInDto application) throws
             ApplicationNotFoundException {
         Application existingApplication = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));

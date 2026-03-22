@@ -1,6 +1,7 @@
 package com.svalero.worklink.Dto;
 
 import com.svalero.worklink.model.ApplicationStatus;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class ApplicationInDto {
     private ApplicationStatus status;
     private Long applicationTypeId;
     private Long userId;
+    @NotBlank(message = "El comentario es obligatorio")
     private String comments;
     private Long resolverId;
     private String resolverComments;

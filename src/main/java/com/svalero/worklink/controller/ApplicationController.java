@@ -58,7 +58,7 @@ public class ApplicationController {
     }
 
     @PutMapping("/application/{id}")
-    public ResponseEntity<ApplicationOutDto> updateApplication(@PathVariable Long id, @Valid @RequestBody ApplicationInDto application) throws ApplicationNotFoundException {
+    public ResponseEntity<ApplicationOutDto> updateApplication(@PathVariable Long id, @Valid @RequestBody ApplicationPutInDto application) throws ApplicationNotFoundException {
         ApplicationOutDto newApplication = applicationService.modifyApplication(id, application);
         return ResponseEntity.ok(newApplication);
     }

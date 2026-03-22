@@ -12,7 +12,7 @@ public class UserBalanceInDto {
 
     @NotNull
     private Long userId;
-    @NotNull
+    @NotNull(message = "El año debe ser obligatorio")
     private Integer year;
     private Integer vacationDays;
     private Integer excessDays;
