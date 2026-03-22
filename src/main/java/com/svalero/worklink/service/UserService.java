@@ -75,6 +75,7 @@ public class UserService {
                 .orElseThrow(() -> new RolNotFoundException("Rol Not Found"));
 
         User newUser = modelMapper.map(user, User.class);
+        newUser.setActive(true);
         newUser.setRol(rol);
         User savedUser = userRepository.save(newUser);
 

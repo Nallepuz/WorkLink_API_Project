@@ -17,4 +17,5 @@ public class RolInDto {
     @Size(min = 15, message = "La descripcion debe tener al menos 15 caracteres")
     private String description;
     private float accessLevel;
+    private boolean active;
 }

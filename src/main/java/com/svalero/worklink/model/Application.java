@@ -61,7 +61,7 @@ public class Application {
     private Turns turnReceive;
 
     // COMENTARIOS
-    @Column(length = 500)
+    @Column(length = 500, nullable = false)
     private String comments; // Comentarios del solicitante
 
     @Column(name = "resolver_comments", length = 500)
