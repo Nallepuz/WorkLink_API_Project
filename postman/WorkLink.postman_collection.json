@@ -74,6 +74,70 @@
           "response": []
         },
         {
+          "name": "/users (LOGIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 201\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"name\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"email\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"password\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"phone\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"active\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"rol\");\r",
+                  "    pm.expect(jsonResponse.rol).to.have.property(\"id\");\r",
+                  "\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.name).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.email).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.password).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.phone).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.active).to.be.a('boolean');\r",
+                  "    pm.expect(jsonResponse.rol.id).to.be.a('number')\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"adminId\", jsonResponse.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{admin}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "/users {400}",
           "event": [
             {
@@ -188,7 +252,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"email\": \"raul@gmail.com\",\r\n  \"password\": \"1234\"\r\n}",
+              "raw": "{\r\n  \"email\": \"{{admin}}\",\r\n  \"password\": \"1234\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6368,6 +6432,15 @@
     {
       "key": "email2",
       "value": ""
+    },
+    {
+      "key": "admin",
+      "value": ""
+    },
+    {
+      "key": "adminId",
+      "value": "",
+      "type": "default"
     },
     {
       "key": "phone",
