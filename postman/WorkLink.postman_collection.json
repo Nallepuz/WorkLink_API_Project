@@ -7007,23 +7007,23 @@
     },
     {
       "key": "name",
-      "value": ""
+      "value": "ejemplo"
     },
     {
       "key": "name2",
-      "value": ""
+      "value": "ejemplo2"
     },
     {
       "key": "email",
-      "value": ""
+      "value": "ejemplo@worklink.com"
     },
     {
       "key": "email2",
-      "value": ""
+      "value": "prueba@worklink.com"
     },
     {
       "key": "admin",
-      "value": ""
+      "value": "admin@gmail.com"
     },
     {
       "key": "adminId",
@@ -7032,11 +7032,11 @@
     },
     {
       "key": "phone",
-      "value": ""
+      "value": "123123123"
     },
     {
       "key": "phone2",
-      "value": ""
+      "value": "987987987"
     },
     {
       "key": "userId",
@@ -7052,11 +7052,11 @@
     },
     {
       "key": "rol-description",
-      "value": ""
+      "value": "ejemplo de la empresa"
     },
     {
       "key": "rol-description2",
-      "value": ""
+      "value": "ejemplo de la empresa nuevo"
     },
     {
       "key": "balanceId",
@@ -7072,7 +7072,7 @@
     },
     {
       "key": "date2",
-      "value": ""
+      "value": "2026-10-20"
     },
     {
       "key": "typeId",
@@ -7092,7 +7092,7 @@
     },
     {
       "key": "status",
-      "value": ""
+      "value": "APPROVED"
     },
     {
       "key": "userBalancesId",
@@ -7100,7 +7100,7 @@
     },
     {
       "key": "year",
-      "value": ""
+      "value": "2077"
     }
   ]
 }
