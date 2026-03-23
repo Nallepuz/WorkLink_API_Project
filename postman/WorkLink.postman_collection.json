@@ -7160,8 +7160,7 @@
     },
     {
       "key": "adminId",
-      "value": "",
-      "type": "default"
+      "value": ""
     },
     {
       "key": "phone",
