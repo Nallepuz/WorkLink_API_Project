@@ -10,6 +10,55 @@
       "name": "Actions Init",
       "item": [
         {
+          "name": "/rol (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"admin\",\r\n  \"description\": \"Admin de la empresa\",\r\n  \"accessLevel\": 2,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/rol",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "rol"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "/users (LOGIN)",
           "event": [
             {
@@ -135,55 +184,6 @@
               ],
               "path": [
                 "login"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/rol (ADMIN)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"name\": \"admin\",\r\n  \"description\": \"Admin de la empresa\",\r\n  \"accessLevel\": 2,\r\n  \"active\": true\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/rol",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "rol"
               ]
             }
           },
