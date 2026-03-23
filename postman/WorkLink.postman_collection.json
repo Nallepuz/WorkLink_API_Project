@@ -7,72 +7,8 @@
   },
   "item": [
     {
-      "name": "User",
+      "name": "Actions Init",
       "item": [
-        {
-          "name": "/users",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 201\", () => {\r",
-                  "    pm.expect(pm.response.code).to.eql(201);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"name\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"email\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"password\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"phone\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"active\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"rol\");\r",
-                  "    pm.expect(jsonResponse.rol).to.have.property(\"id\");\r",
-                  "\r",
-                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.name).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.email).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.password).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.phone).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.active).to.be.a('boolean');\r",
-                  "    pm.expect(jsonResponse.rol.id).to.be.a('number')\r",
-                  "});\r",
-                  "\r",
-                  "pm.collectionVariables.set(\"userId\", jsonResponse.id);"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 2\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/users",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
         {
           "name": "/users (LOGIN)",
           "event": [
@@ -119,73 +55,6 @@
             "body": {
               "mode": "raw",
               "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{admin}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 2\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/users",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/users {400}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 400\", () => {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"errors\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"error message is ok\", () => {\r",
-                  "    pm.expect(jsonResponse.code).to.eql(400);\r",
-                  "    pm.expect(jsonResponse.title).to.eql(\"bad-request\");\r",
-                  "    pm.expect(jsonResponse.message).to.eql(\"Validation error\");\r",
-                  "    pm.expect(jsonResponse.errors.name).to.eql(\"El nombre es obligatorio\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -266,6 +135,725 @@
               ],
               "path": [
                 "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"admin\",\r\n  \"description\": \"Admin de la empresa\",\r\n  \"accessLevel\": 2,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/rol",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "rol"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol (OPERARIO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Operario\",\r\n  \"description\": \"Operario de la empresa\",\r\n  \"accessLevel\": 1,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/rol",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "rol"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/turns (MAÑANA)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Mañana\",\r\n  \"description\": \"Turno de mañanas\",\r\n  \"workStart\": \"06:00:00\",\r\n  \"workEnd\": \"14:00:00\",\r\n  \"colorHex\":\"#F5CC27\",\r\n  \"nights\": false,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/turns",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "turns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/turns (TARDE)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Tarde\",\r\n  \"description\": \"Turno de tardes\",\r\n  \"workStart\": \"14:00:00\",\r\n  \"workEnd\": \"22:00:00\",\r\n  \"colorHex\":\"#F562A4\",\r\n  \"nights\": false,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/turns",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "turns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/turns (NOCHE)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Noche\",\r\n  \"description\": \"Tarde de noches\",\r\n  \"workStart\": \"22:00:00\",\r\n  \"workEnd\": \"06:00:00\",\r\n  \"colorHex\":\"#0E8262\",\r\n  \"nights\": true,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/turns",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "turns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/turns (VACACIONES)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Vacaciones\",\r\n  \"description\": \"Vacaciones pagadas\",\r\n  \"workStart\": null,\r\n  \"workEnd\": null,\r\n  \"colorHex\":\"#FF8000\",\r\n  \"nights\": false,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/turns",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "turns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/applicationType (VACACIONES PAGADAS)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Vacaciones\",\r\n  \"description\": \"Vacaciones pagadas\",\r\n  \"affectsBalance\": true,\r\n  \"active\": true\r\n}\r\n  ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/applicationType",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "applicationType"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/applicationType (DIAS EXCESO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Dias Exceso\",\r\n  \"description\": \"Día de exceso pagado\",\r\n  \"affectsBalance\": true,\r\n  \"active\": true\r\n}\r\n  ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/applicationType",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "applicationType"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/applicationType (NO RETRIBUIDO)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"No Retribuido\",\r\n  \"description\": \"Día libre no pagado\",\r\n  \"affectsBalance\": true,\r\n  \"active\": true\r\n}\r\n  ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/applicationType",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "applicationType"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/applicationType (HORAS)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Bolsa de horas\",\r\n  \"description\": \"Horas libres pagadas\",\r\n  \"affectsBalance\": true,\r\n  \"active\": true\r\n}\r\n  ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/applicationType",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "applicationType"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/applicationType (CAMBIOS)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Cambio de turno\",\r\n  \"description\": \"Cambio de turno\",\r\n  \"affectsBalance\": false,\r\n  \"active\": true\r\n}\r\n  ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/applicationType",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "applicationType"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "/users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 201\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"name\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"email\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"password\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"phone\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"active\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"rol\");\r",
+                  "    pm.expect(jsonResponse.rol).to.have.property(\"id\");\r",
+                  "\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.name).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.email).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.password).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.phone).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.active).to.be.a('boolean');\r",
+                  "    pm.expect(jsonResponse.rol.id).to.be.a('number')\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"userId\", jsonResponse.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/users {400}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 400\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"errors\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error message is ok\", () => {\r",
+                  "    pm.expect(jsonResponse.code).to.eql(400);\r",
+                  "    pm.expect(jsonResponse.title).to.eql(\"bad-request\");\r",
+                  "    pm.expect(jsonResponse.message).to.eql(\"Validation error\");\r",
+                  "    pm.expect(jsonResponse.errors.name).to.eql(\"El nombre es obligatorio\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users"
               ]
             }
           },
@@ -2419,678 +3007,6 @@
       ]
     },
     {
-      "name": "TurnAssigned",
-      "item": [
-        {
-          "name": "assigned",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 201\", () => {\r",
-                  "    pm.expect(pm.response.code).to.eql(201);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
-                  "\r",
-                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
-                  "});\r",
-                  "\r",
-                  "pm.collectionVariables.set(\"assignId\", jsonResponse.id);"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"date\": \"2026-03-10\",\r\n  \"userId\": 1,\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/assigned",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "assigned {404}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 400\", () => {\r",
-                  "    pm.response.to.have.status(400);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"error message is ok\", () => {\r",
-                  "    pm.expect(jsonResponse.code).to.eql(400);\r",
-                  "    pm.expect(jsonResponse.title).to.eql(\"bad-request\");\r",
-                  "    pm.expect(jsonResponse.message).to.eql(\"Validation error\");\r",
-                  "    pm.expect(jsonResponse.errors.date).to.eql(\"El día es obligatorio\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"userId\": 1,\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/assigned",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const response = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"STATUS 200\", function () {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LA RESPUESTA ES UN ARRAY\", function () {\r",
-                  "    pm.expect(response).to.be.an(\"array\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"HAY AL MENOS UN turno asignado\", function () {\r",
-                  "    pm.expect(response.length).to.be.above(0);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LA ESTRUCTURA DEL PRIMER turno asignado ES CORRECTA\", function () {\r",
-                  "    pm.expect(response[0]).to.have.property(\"id\");\r",
-                  "    pm.expect(response[0]).to.have.property(\"date\");\r",
-                  "    pm.expect(response[0]).to.have.property(\"userId\");\r",
-                  "    pm.expect(response[0]).to.have.property(\"turnId\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LOS TIPOS DEL PRIMER turno asignado SON CORRECTOS\", function () {\r",
-                  "    pm.expect(response[0].id).to.be.a(\"number\");\r",
-                  "    pm.expect(response[0].date).to.be.a(\"string\");\r",
-                  "    pm.expect(response[0].userId).to.be.a(\"number\");\r",
-                  "    pm.expect(response[0].turnId).to.be.a(\"number\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned {403 sin token}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"STATUS 403 WITHOUT TOKEN\", () => {\r",
-                  "    pm.response.to.have.status(403);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
-                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 200\", () => {\r",
-                  "    pm.expect(pm.response.code).to.eql(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response types are correct\", () => {\r",
-                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned/{{assignId}}",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "{{assignId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id {404}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"STATUS 404\", () => {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"RESPUESTA DE ERROR CORRECTA\", () => {\r",
-                  "    pm.expect(jsonData).to.have.property(\"message\");\r",
-                  "    pm.expect(jsonData.message).to.be.a(\"string\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned/999",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "999"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id {403 sin token}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"STATUS 403 SIN TOKEN\", () => {\r",
-                  "    pm.response.to.have.status(403);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
-                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned/{{assignId}}",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "{{assignId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 200\", () => {\r",
-                  "    pm.response.to.have.status(200);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response types are correct\", () => {\r",
-                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
-                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
-                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"data has changed\", () => {\r",
-                  "    pm.expect(jsonResponse.date).to.eql(pm.collectionVariables.get(\"date2\"));\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/assigned/{{assignId}}",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "{{assignId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id {404}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonData = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"STATUS 404\", () => {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"RESPUESTA DE ERROR CORRECTA\", () => {\r",
-                  "    pm.expect(jsonData).to.have.property(\"message\");\r",
-                  "    pm.expect(jsonData.message).to.be.a(\"string\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/assigned/999",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "999"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id {403 sin token}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"STATUS 403 WITHOUT TOKEN\", () => {\r",
-                  "    pm.response.to.have.status(403);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
-                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "PUT",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{HOST}}/assigned/{{assignId}}",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "{{assignId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test(\"status code is 204\", () => {\r",
-                  "    pm.response.to.have.status(204);\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned/{{assignId}}",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "{{assignId}}"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "/assigned/:id {404}",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const jsonResponse = pm.response.json();\r",
-                  "\r",
-                  "pm.test(\"status code is 404\", () => {\r",
-                  "    pm.response.to.have.status(404);\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"response structure is ok\", () => {\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
-                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
-                  "});\r",
-                  "\r",
-                  "pm.test(\"error message is ok\", () => {\r",
-                  "    pm.expect(jsonResponse.code).to.eql(404);\r",
-                  "    pm.expect(jsonResponse.title).to.eql(\"not-found\");\r",
-                  "    pm.expect(jsonResponse.message).to.eql(\"The turn assigned does not exist\");\r",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{HOST}}/assigned/999",
-              "host": [
-                "{{HOST}}"
-              ],
-              "path": [
-                "assigned",
-                "999"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
       "name": "ApplicationType",
       "item": [
         {
@@ -3763,6 +3679,678 @@
               ],
               "path": [
                 "applicationType",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "TurnAssigned",
+      "item": [
+        {
+          "name": "assigned",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 201\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
+                  "\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"assignId\", jsonResponse.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"date\": \"2026-03-10\",\r\n  \"userId\": 1,\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/assigned",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "assigned {404}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 400\", () => {\r",
+                  "    pm.response.to.have.status(400);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error message is ok\", () => {\r",
+                  "    pm.expect(jsonResponse.code).to.eql(400);\r",
+                  "    pm.expect(jsonResponse.title).to.eql(\"bad-request\");\r",
+                  "    pm.expect(jsonResponse.message).to.eql(\"Validation error\");\r",
+                  "    pm.expect(jsonResponse.errors.date).to.eql(\"El día es obligatorio\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userId\": 1,\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/assigned",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"STATUS 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LA RESPUESTA ES UN ARRAY\", function () {\r",
+                  "    pm.expect(response).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"HAY AL MENOS UN turno asignado\", function () {\r",
+                  "    pm.expect(response.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LA ESTRUCTURA DEL PRIMER turno asignado ES CORRECTA\", function () {\r",
+                  "    pm.expect(response[0]).to.have.property(\"id\");\r",
+                  "    pm.expect(response[0]).to.have.property(\"date\");\r",
+                  "    pm.expect(response[0]).to.have.property(\"userId\");\r",
+                  "    pm.expect(response[0]).to.have.property(\"turnId\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LOS TIPOS DEL PRIMER turno asignado SON CORRECTOS\", function () {\r",
+                  "    pm.expect(response[0].id).to.be.a(\"number\");\r",
+                  "    pm.expect(response[0].date).to.be.a(\"string\");\r",
+                  "    pm.expect(response[0].userId).to.be.a(\"number\");\r",
+                  "    pm.expect(response[0].turnId).to.be.a(\"number\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned {403 sin token}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"STATUS 403 WITHOUT TOKEN\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 200\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response types are correct\", () => {\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned/{{assignId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "{{assignId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id {404}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"STATUS 404\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"RESPUESTA DE ERROR CORRECTA\", () => {\r",
+                  "    pm.expect(jsonData).to.have.property(\"message\");\r",
+                  "    pm.expect(jsonData.message).to.be.a(\"string\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned/999",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id {403 sin token}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"STATUS 403 SIN TOKEN\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned/{{assignId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "{{assignId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"date\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"userId\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"turnId\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response types are correct\", () => {\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.date).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.userId).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.turnId).to.be.a('number');\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"data has changed\", () => {\r",
+                  "    pm.expect(jsonResponse.date).to.eql(pm.collectionVariables.get(\"date2\"));\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/assigned/{{assignId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "{{assignId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id {404}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonData = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"STATUS 404\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"RESPUESTA DE ERROR CORRECTA\", () => {\r",
+                  "    pm.expect(jsonData).to.have.property(\"message\");\r",
+                  "    pm.expect(jsonData.message).to.be.a(\"string\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/assigned/999",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "999"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id {403 sin token}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"STATUS 403 WITHOUT TOKEN\", () => {\r",
+                  "    pm.response.to.have.status(403);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"LA RUTA PROTEGIDA NO PERMITE ACCESO SIN TOKEN\", () => {\r",
+                  "    pm.expect(pm.response.code).to.not.eql(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/assigned/{{assignId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "{{assignId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status code is 204\", () => {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned/{{assignId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
+                "{{assignId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/assigned/:id {404}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 404\", () => {\r",
+                  "    pm.response.to.have.status(404);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"code\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"title\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"message\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"error message is ok\", () => {\r",
+                  "    pm.expect(jsonResponse.code).to.eql(404);\r",
+                  "    pm.expect(jsonResponse.title).to.eql(\"not-found\");\r",
+                  "    pm.expect(jsonResponse.message).to.eql(\"The turn assigned does not exist\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/assigned/999",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "assigned",
                 "999"
               ]
             }
