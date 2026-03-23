@@ -6303,7 +6303,7 @@
                   "    pm.expect(jsonResponse.rol.id).to.be.a('number')\r",
                   "});\r",
                   "\r",
-                  "pm.collectionVariables.set(\"adminId\", jsonResponse.id);"
+                  "pm.collectionVariables.set(\"userId\", jsonResponse.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -6316,7 +6316,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{admin}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 1\r\n}",
+              "raw": "{\r\n  \"name\": \"prueba\",\r\n  \"email\": \"aaaaa@gmail.com\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 1\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6485,7 +6485,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": 2,\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": 1,\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
