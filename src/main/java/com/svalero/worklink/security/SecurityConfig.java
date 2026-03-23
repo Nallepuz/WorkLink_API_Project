@@ -22,8 +22,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/users").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/turns").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/rol").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**").permitAll()
                         .anyRequest().authenticated()
