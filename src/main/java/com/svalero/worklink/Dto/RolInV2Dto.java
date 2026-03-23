@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RolInV2Dto {
-
     @NotBlank(message = "EL nombre es obligatorio")
     private String name;
 

@@ -62,7 +62,7 @@ public class RolController {
         RolOutDto newRol = rolService.addRolV2(rol);
         return new ResponseEntity<RolOutDto>(newRol, HttpStatus.CREATED);
     }
-    // ---------------------------------------------------------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------
 
     // PUT CON VERSIONADO
     @PutMapping("/v1/rol/{id}")
@@ -76,7 +76,7 @@ public class RolController {
         RolOutDto newRol = rolService.modifyRolV2(id, rol);
         return ResponseEntity.ok(newRol);
     }
-    // ---------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------
 
     @DeleteMapping("/v1/rol/{id}")
     public ResponseEntity<Void> deleteRol(@PathVariable Long id) throws RolNotFoundException {
