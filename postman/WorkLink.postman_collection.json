@@ -37,11 +37,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
               ]
             }
@@ -217,11 +219,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
               ]
             }
@@ -4016,7 +4020,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"date\": \"2026-03-10\",\r\n  \"userId\": 1,\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
+              "raw": "{\r\n  \"date\": \"2026-03-10\",\r\n  \"userId\": {{adminId}},\r\n  \"turnId\": 2 // 1-M, 2-T, 3-N, 4-V\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
