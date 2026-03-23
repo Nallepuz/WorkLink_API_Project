@@ -1,5 +1,4 @@
 name: Postman integration tests
-
 on:
   push:
     branches: [ "developer", "main", "master" ]
