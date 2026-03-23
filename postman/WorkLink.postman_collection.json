@@ -25,16 +25,6 @@
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
             "method": "POST",
             "header": [],
             "body": {
@@ -4129,7 +4119,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 2,\r\n  \"turnId\": 1\r\n}",
+              "raw": "{\r\n  \"date\": \"{{date2}}\",\r\n  \"userId\": 1,\r\n  \"turnId\": 1\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4570,7 +4560,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"applicationTypeId\": 5, // Sólo es válido el 5\r\n  \"userId\": 1,\r\n  \"affectedUserId\": 2, \r\n  \"startDate\": \"2026-03-10\",\r\n  \"endDate\": \"2026-03-10\",\r\n  \"turnGiveId\": 2,        // 1-M , 2-T, 3-N, 4-V\r\n  \"turnReceiveId\": 3,\r\n  \"comments\": \"Quiero las noches de Alex\"\r\n}",
+              "raw": "{\r\n  \"applicationTypeId\": 5, // Sólo es válido el 5\r\n  \"userId\": 1,\r\n  \"affectedUserId\": 1, \r\n  \"startDate\": \"2026-03-10\",\r\n  \"endDate\": \"2026-03-10\",\r\n  \"turnGiveId\": 2,        // 1-M , 2-T, 3-N, 4-V\r\n  \"turnReceiveId\": 3,\r\n  \"comments\": \"Quiero las noches de Alex\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6281,6 +6271,166 @@
     {
       "name": "UserBalance",
       "item": [
+        {
+          "name": "/users (Para poder borrar Balance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 201\", () => {\r",
+                  "    pm.expect(pm.response.code).to.eql(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"name\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"email\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"password\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"phone\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"active\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"rol\");\r",
+                  "    pm.expect(jsonResponse.rol).to.have.property(\"id\");\r",
+                  "\r",
+                  "    pm.expect(jsonResponse.id).to.be.a('number');\r",
+                  "    pm.expect(jsonResponse.name).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.email).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.password).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.phone).to.be.a('string');\r",
+                  "    pm.expect(jsonResponse.active).to.be.a('boolean');\r",
+                  "    pm.expect(jsonResponse.rol.id).to.be.a('number')\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"adminId\", jsonResponse.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{name}}\",\r\n  \"email\": \"{{admin}}\",\r\n  \"password\": \"1234\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"active\": true,\r\n  \"rolId\": 1\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/users",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userBalances (Para poder borrar Balance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "const userId = Number(pm.collectionVariables.get(\"userId\"));\r",
+                  "\r",
+                  "const createdUserBalance = jsonResponse.find(balance => balance.userId === userId);\r",
+                  "\r",
+                  "pm.test(\"se ha creado el userBalance del usuario\", () => {\r",
+                  "    pm.expect(createdUserBalance).to.not.be.undefined;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"el userBalance pertenece al usuario creado\", () => {\r",
+                  "    pm.expect(createdUserBalance.userId).to.eql(userId);\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"userBalanceId\", createdUserBalance.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/userBalances",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "userBalances"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/userBalances/:id (Para poder borrar Balance)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status code is 204\", () => {\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{HOST}}/userBalances/{{userBalanceId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "userBalances",
+                "{{userBalanceId}}"
+              ]
+            }
+          },
+          "response": []
+        },
         {
           "name": "/userBalances",
           "event": [
