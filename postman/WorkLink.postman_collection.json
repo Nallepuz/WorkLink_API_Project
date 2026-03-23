@@ -6336,7 +6336,7 @@
               "script": {
                 "exec": [
                   "const jsonResponse = pm.response.json();\r",
-                  "const userId = Number(pm.collectionVariables.get(\"userId\"));\r",
+                  "const userId = Number(pm.collectionVariables.get(\"adminId\"));\r",
                   "\r",
                   "const createdUserBalance = jsonResponse.find(balance => balance.userId === userId);\r",
                   "\r",
@@ -6348,7 +6348,7 @@
                   "    pm.expect(createdUserBalance.userId).to.eql(userId);\r",
                   "});\r",
                   "\r",
-                  "pm.collectionVariables.set(\"userBalanceId\", createdUserBalance.id);"
+                  "pm.collectionVariables.set(\"userBalancesId\", createdUserBalance.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -6357,6 +6357,16 @@
             }
           ],
           "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
@@ -6402,13 +6412,13 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{HOST}}/userBalances/{{userBalanceId}}",
+              "raw": "{{HOST}}/userBalances/{{userBalancesId}}",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
                 "userBalances",
-                "{{userBalanceId}}"
+                "{{userBalancesId}}"
               ]
             }
           },
@@ -6468,7 +6478,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": {{userId}},\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": {{adminId}},\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6878,7 +6888,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": 2,\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": {{adminId}},\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6937,7 +6947,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": 2,\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": {{adminId}},\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -6986,7 +6996,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": 2,\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": {{adminId}},\r\n  \"year\": \"{{year}}\",\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
