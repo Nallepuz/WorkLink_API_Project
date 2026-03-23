@@ -1586,7 +1586,85 @@
       "name": "Rol",
       "item": [
         {
-          "name": "/rol",
+          "name": "/rol V1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 201\", () => {\r",
+                  "    pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"name\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"description\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"accessLevel\");\r",
+                  "    pm.expect(jsonResponse).to.have.property(\"active\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response types are correct\", () => {\r",
+                  "    pm.expect(jsonResponse.id).to.be.a(\"number\");\r",
+                  "    pm.expect(jsonResponse.name).to.be.a(\"string\");\r",
+                  "    pm.expect(jsonResponse.description).to.be.a(\"string\");\r",
+                  "    pm.expect(jsonResponse.accessLevel).to.be.a(\"number\");\r",
+                  "    pm.expect(jsonResponse.active).to.be.a(\"boolean\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response values are correct\", () => {\r",
+                  "    pm.expect(jsonResponse.name).to.eql(pm.collectionVariables.get(\"name2\"));\r",
+                  "    pm.expect(jsonResponse.description).to.eql(pm.collectionVariables.get(\"rol-description\"));\r",
+                  "});\r",
+                  "\r",
+                  "pm.collectionVariables.set(\"rolId\", jsonResponse.id);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"{{name2}}\",\r\n  \"description\": \"{{rol-description}}\",\r\n  \"accessLevel\": 2,\r\n  \"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v1/rol",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "rol"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol V2",
           "event": [
             {
               "listen": "test",
@@ -1619,7 +1697,7 @@
                   "    pm.expect(jsonResponse.description).to.eql(pm.collectionVariables.get(\"rol-description\"));\r",
                   "});\r",
                   "\r",
-                  "pm.collectionVariables.set(\"rolId\", jsonResponse.id);"
+                  "pm.collectionVariables.set(\"rolId2\", jsonResponse.id);"
                 ],
                 "type": "text/javascript",
                 "packages": {},
@@ -1650,11 +1728,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v2/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v2",
                 "rol"
               ]
             }
@@ -1696,7 +1776,14 @@
           ],
           "request": {
             "auth": {
-              "type": "noauth"
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
             },
             "method": "POST",
             "header": [],
@@ -1710,11 +1797,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
               ]
             }
@@ -1722,7 +1811,7 @@
           "response": []
         },
         {
-          "name": "/rol",
+          "name": "/rol V1",
           "event": [
             {
               "listen": "test",
@@ -1777,12 +1866,89 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol V2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response is an array\", () => {\r",
+                  "    pm.expect(jsonResponse).to.be.an(\"array\");\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"response has at least one item\", () => {\r",
+                  "    pm.expect(jsonResponse.length).to.be.above(0);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"first item structure is ok\", () => {\r",
+                  "    pm.expect(jsonResponse[0]).to.have.property(\"id\");\r",
+                  "    pm.expect(jsonResponse[0]).to.have.property(\"name\");\r",
+                  "    pm.expect(jsonResponse[0]).to.have.property(\"description\");\r",
+                  "    pm.expect(jsonResponse[0]).to.have.property(\"accessLevel\");\r",
+                  "    pm.expect(jsonResponse[0]).to.have.property(\"active\");\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v2/rol?name=ej",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "rol"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "ej"
+                }
               ]
             }
           },
@@ -1823,11 +1989,13 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
               ]
             }
@@ -1886,11 +2054,13 @@
               "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}"
             },
             "url": {
-              "raw": "{{HOST}}/rol/{{rolId}}",
+              "raw": "{{HOST}}/api/v1/rol/{{rolId}}",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "{{rolId}}"
               ]
@@ -1943,11 +2113,13 @@
               "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}"
             },
             "url": {
-              "raw": "{{HOST}}/rol/999",
+              "raw": "{{HOST}}/api/v1/rol/999",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "999"
               ]
@@ -1990,11 +2162,13 @@
               "raw": ""
             },
             "url": {
-              "raw": "{{HOST}}/rol",
+              "raw": "{{HOST}}/api/v1/rol",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol"
               ]
             }
@@ -2002,7 +2176,7 @@
           "response": []
         },
         {
-          "name": "/rol/:id",
+          "name": "/rol/:id V1",
           "event": [
             {
               "listen": "test",
@@ -2041,7 +2215,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\": \"{{name2}}\",\r\n  \t\"description\": \"{{rol-description2}}\",\r\n  \t\"accessLevel\": 5.0,\r\n \t\"active\": true\r\n}",
+              "raw": "{\r\n    \"name\": \"{{name2}}\",\r\n    \"description\":\"{{rol-description2}}\",\r\n    \"accessLevel\": 5,\r\n \t\"active\": true\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2049,11 +2223,75 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol/{{rolId}}",
+              "raw": "{{HOST}}/api/v1/rol/{{rolId}}",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
+                "rol",
+                "{{rolId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol/:id V2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const jsonResponse = pm.response.json();\r",
+                  "\r",
+                  "pm.test(\"status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"updated data is correct\", () => {\r",
+                  "    pm.expect(jsonResponse.name).to.eql(pm.collectionVariables.get(\"name3\"));\r",
+                  "    pm.expect(jsonResponse.description).to.eql(pm.collectionVariables.get(\"rol-description2\"));\r",
+                  "    pm.expect(jsonResponse.accessLevel).to.eql(5);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"{{name3}}\",\r\n  \t\"description\": \"{{rol-description2}}\",\r\n  \t\"accessLevel\": 5.0,\r\n \t\"active\": true\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v2/rol/{{rolId}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v2",
                 "rol",
                 "{{rolId}}"
               ]
@@ -2108,11 +2346,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol/999",
+              "raw": "{{HOST}}/api/v1/rol/999",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "999"
               ]
@@ -2157,11 +2397,13 @@
               }
             },
             "url": {
-              "raw": "{{HOST}}/rol/{{rolId}}",
+              "raw": "{{HOST}}/api/v1/rol/{{rolId}}",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "{{rolId}}"
               ]
@@ -2170,7 +2412,7 @@
           "response": []
         },
         {
-          "name": "/rol/:id",
+          "name": "/rol/:id V1",
           "event": [
             {
               "listen": "test",
@@ -2204,13 +2446,64 @@
               "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}"
             },
             "url": {
-              "raw": "{{HOST}}/rol/{{rolId}}",
+              "raw": "{{HOST}}/api/v1/rol/{{rolId}}",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "{{rolId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/rol/:id V2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status code is 200\", () => {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}"
+            },
+            "url": {
+              "raw": "{{HOST}}/api/v2/rol/{{rolId2}}",
+              "host": [
+                "{{HOST}}"
+              ],
+              "path": [
+                "api",
+                "v2",
+                "rol",
+                "{{rolId2}}"
               ]
             }
           },
@@ -2265,11 +2558,13 @@
               "raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{$randomPassword}}\",\r\n  \"phone\": \"{{phone}}\",\r\n  \"hours_balance\": 12.5,\r\n  \"longitud\": {{$randomInt}},\r\n  \"latitud\": {{$randomInt}},\r\n  \"active\": {{$randomBoolean}},\r\n  \"rolId\": 2\r\n}"
             },
             "url": {
-              "raw": "{{HOST}}/rol/999",
+              "raw": "{{HOST}}/api/v1/rol/999",
               "host": [
                 "{{HOST}}"
               ],
               "path": [
+                "api",
+                "v1",
                 "rol",
                 "999"
               ]
@@ -7243,6 +7538,14 @@
     {
       "key": "year",
       "value": "2077"
+    },
+    {
+      "key": "name3",
+      "value": "Operario3"
+    },
+    {
+      "key": "rolId2",
+      "value": ""
     }
   ]
 }
