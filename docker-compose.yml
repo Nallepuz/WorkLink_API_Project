@@ -1,0 +1,29 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: worklink-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: APIWorkLink_docker
+    ports:
+      - "3308:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    container_name: worklink-api
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    restart: on-failure
+
+volumes:
+  mariadb_data:
