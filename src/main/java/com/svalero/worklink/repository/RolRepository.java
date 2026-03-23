@@ -13,4 +13,5 @@ public interface RolRepository extends CrudRepository<Rol, Long> {
     List<Rol> findByName(String name);
     List<Rol> findByAccessLevel(Float accessLevel);
     List<Rol> findByActive(Boolean active);
+    boolean existsByNameIgnoreCase(String name);
 }

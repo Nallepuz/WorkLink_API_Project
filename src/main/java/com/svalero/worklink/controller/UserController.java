@@ -50,9 +50,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginOutDto> login(@RequestBody LoginInDto login) throws UserNotFoundException {
-
         LoginOutDto user = userService.login(login);
-
         return ResponseEntity.ok(user);
     }
 
