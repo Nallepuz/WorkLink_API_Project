@@ -68,7 +68,7 @@ public class RolService {
 
         return modelMapper.map(rols, new TypeToken<List<RolOutDto>>() {}.getType());
     }
-    // ------------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------
 
     public RolOutDto findById(Long id) throws RolNotFoundException {
         Rol rol = rolRepository.findById(id)
