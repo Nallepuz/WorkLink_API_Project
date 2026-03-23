@@ -817,14 +817,7 @@
           ],
           "request": {
             "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
+              "type": "noauth"
             },
             "method": "POST",
             "header": [],
@@ -6364,16 +6357,6 @@
             }
           ],
           "request": {
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{token}}",
-                  "type": "string"
-                }
-              ]
-            },
             "method": "GET",
             "header": [],
             "url": {
@@ -6485,7 +6468,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n  \"userId\": 1,\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
+              "raw": "{\r\n  \"userId\": {{userId}},\r\n  \"year\": 2026,\r\n  \"vacationDays\": 40,\r\n  \"excessDays\": 2,\r\n  \"unpaidDays\": 2,\r\n  \"hoursBalance\": 24\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
