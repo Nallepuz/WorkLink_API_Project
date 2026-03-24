@@ -24,4 +24,5 @@ public class TurnInDto {
     @NotBlank(message = "El color es obligatorio")
     private String colorHex;
     private boolean nights;
+    private boolean active;
 }
