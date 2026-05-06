@@ -202,10 +202,44 @@ public class ApplicationService {
                 if (application.getStartDate().isAfter(application.getEndDate())) {
                     throw new IllegalArgumentException("StartDate cannot be after EndDate");
                 }
+                validateShiftChangeConsistency(application);
                 break;
 
             default:
                 throw new IllegalArgumentException("Unknown application type");
+        }
+    }
+
+    private void validateShiftChangeConsistency(ApplicationInDto application) {
+        LocalDate start = application.getStartDate();
+        LocalDate end = application.getEndDate();
+        Long userId = application.getUserId();
+        Long affectedUserId = application.getAffectedUserId();
+
+        // Verificar que el turno que cede el solicitante es el que realmente tiene
+        List<TurnAssigned> userTurns = turnAssignedRepository
+                .findByUserIdAndDateBetween(userId, start, end);
+
+        if (!userTurns.isEmpty()) {
+            Long actualTurnId = userTurns.get(0).getTurn().getId();
+            if (!actualTurnId.equals(application.getTurnGiveId())) {
+                throw new IllegalArgumentException(
+                        "El turno que cedes no coincide con tu turno real en esas fechas"
+                );
+            }
+        }
+
+        // Verificar que el turno que recibe el solicitante es el que tiene el afectado
+        List<TurnAssigned> affectedTurns = turnAssignedRepository
+                .findByUserIdAndDateBetween(affectedUserId, start, end);
+
+        if (!affectedTurns.isEmpty()) {
+            Long actualAffectedTurnId = affectedTurns.get(0).getTurn().getId();
+            if (!actualAffectedTurnId.equals(application.getTurnReceiveId())) {
+                throw new IllegalArgumentException(
+                        "El turno que recibes no coincide con el turno real del compañero en esas fechas"
+                );
+            }
         }
     }
 
