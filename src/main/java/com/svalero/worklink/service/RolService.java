@@ -96,10 +96,13 @@ public class RolService {
 
     // PUT CON VERSIONADO
     public RolOutDto modifyRol(Long id, RolInDto rol) throws RolNotFoundException {
+        System.out.println(">>> EJECUTANDO MODIFY ROL V1 - SIN ACTIVE");
         Rol existingRol = rolRepository.findById(id)
                 .orElseThrow(() -> new RolNotFoundException("Rol not found"));
 
-        modelMapper.map(rol, existingRol);
+        existingRol.setName(rol.getName());
+        existingRol.setDescription(rol.getDescription());
+        existingRol.setAccessLevel(rol.getAccessLevel());
 
         Rol savedRol = rolRepository.save(existingRol);
         return modelMapper.map(savedRol, RolOutDto.class);
