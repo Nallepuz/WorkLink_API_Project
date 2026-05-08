@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -33,6 +32,8 @@ public class ApplicationService {
     private UserBalanceRepository userBalanceRepository;
     @Autowired
     private TurnAssignedRepository turnAssignedRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     // GET
     public List<ApplicationOutDto> findAll(String status, Long userId) throws ApplicationNotFoundException {
@@ -40,7 +41,7 @@ public class ApplicationService {
 
         if (status != null) {
             applications = applications.stream()
-                    .filter(application -> application.getStatus().equals(status))
+                    .filter(application -> application.getStatus().name().equals(status))
                     .toList();
         }
         if (userId != null) {
@@ -49,8 +50,17 @@ public class ApplicationService {
                     .toList();
         }
 
-        return modelMapper.map(applications, new TypeToken<List<ApplicationOutDto>>() {
-        }.getType());
+        return applications.stream().map(app -> {
+            ApplicationOutDto dto = modelMapper.map(app, ApplicationOutDto.class);
+            dto.setUserId(app.getUser().getId());
+            dto.setUserName(app.getUser().getName());
+            dto.setApplicationTypeId(app.getApplicationType().getId());
+            if (app.getAffectedUser() != null) {
+                dto.setAffectedUserId(app.getAffectedUser().getId());
+                dto.setAffectedUserName(app.getAffectedUser().getName());
+            }
+            return dto;
+        }).toList();
     }
 
     public ApplicationDaysOutDto findDayById(Long id) throws ApplicationNotFoundException {
@@ -60,12 +70,10 @@ public class ApplicationService {
         if (!application.getApplicationType().getName().equals("Vacaciones")
                 && !application.getApplicationType().getName().equals("Dias Exceso")
                 && !application.getApplicationType().getName().equals("No Retribuido")) {
-
             throw new IllegalArgumentException("Application is not a days type");
         }
 
         ApplicationDaysOutDto app = modelMapper.map(application, ApplicationDaysOutDto.class);
-
         app.setApplicationTypeId(application.getApplicationType().getId());
         app.setUserId(application.getUser().getId());
 
@@ -84,7 +92,6 @@ public class ApplicationService {
         }
 
         ApplicationHoursOutDto app = modelMapper.map(application, ApplicationHoursOutDto.class);
-
         app.setApplicationTypeId(application.getApplicationType().getId());
         app.setUserId(application.getUser().getId());
 
@@ -95,7 +102,6 @@ public class ApplicationService {
             app.setResolverId(application.getUser().getId());
         }
         return app;
-
     }
 
     public ApplicationChangeOutDto findChangeById(Long id) throws ApplicationNotFoundException {
@@ -105,8 +111,8 @@ public class ApplicationService {
         if (!application.getApplicationType().getName().equals("Cambio de turno")) {
             throw new IllegalArgumentException("Application is not a change type");
         }
-        ApplicationChangeOutDto app = modelMapper.map(application, ApplicationChangeOutDto.class);
 
+        ApplicationChangeOutDto app = modelMapper.map(application, ApplicationChangeOutDto.class);
         app.setApplicationTypeId(application.getApplicationType().getId());
         app.setUserId(application.getUser().getId());
 
@@ -122,14 +128,22 @@ public class ApplicationService {
         if (application.getTurnReceive() != null) {
             app.setTurnReceiveId(application.getTurnReceive().getId());
         }
-
         return app;
     }
 
     public List<ApplicationOutDto> findByUser(Long userId) {
         List<Application> applications = applicationRepository.findByUserId(userId);
-        return modelMapper.map(applications, new TypeToken<List<ApplicationOutDto>>() {
-        }.getType());
+        return applications.stream().map(app -> {
+            ApplicationOutDto dto = modelMapper.map(app, ApplicationOutDto.class);
+            dto.setUserId(app.getUser().getId());
+            dto.setUserName(app.getUser().getName());
+            dto.setApplicationTypeId(app.getApplicationType().getId());
+            if (app.getAffectedUser() != null) {
+                dto.setAffectedUserId(app.getAffectedUser().getId());
+                dto.setAffectedUserName(app.getAffectedUser().getName());
+            }
+            return dto;
+        }).toList();
     }
 
     // POST
@@ -137,7 +151,7 @@ public class ApplicationService {
 
         User user = userRepository.findById(application.getUserId())
                 .orElseThrow(() -> new ApplicationNotFoundException("User not found"));
-        ;
+
         ApplicationType type = applicationTypeRepository.findById(application.getApplicationTypeId())
                 .orElseThrow(() -> new ApplicationTypeNotFoundException("Application type not found"));
 
@@ -163,11 +177,22 @@ public class ApplicationService {
             newApp.setAffectedUser(affectedUser);
             newApp.setTurnGive(turnGive);
             newApp.setTurnReceive(turnReceive);
+
+            // Notificar al afectado de la nueva solicitud de cambio
+            notificationService.createNotification(
+                    affectedUser.getId(),
+                    user.getName() + " ha solicitado un cambio de turno contigo del " +
+                            application.getStartDate() + " al " + application.getEndDate()
+            );
         }
 
         Application savedApp = applicationRepository.save(newApp);
 
-        return modelMapper.map(savedApp, ApplicationOutDto.class);
+        ApplicationOutDto dto = modelMapper.map(savedApp, ApplicationOutDto.class);
+        dto.setUserId(savedApp.getUser().getId());
+        dto.setUserName(savedApp.getUser().getName());
+        dto.setApplicationTypeId(savedApp.getApplicationType().getId());
+        return dto;
     }
 
     private void validateApplicationBytype(ApplicationInDto application, ApplicationType type) {
@@ -185,7 +210,8 @@ public class ApplicationService {
                 break;
 
             case "Bolsa de horas":
-                if (application.getHoursRequested() == null || application.getDate() == null || application.getFromTime() == null || application.getToTime() == null) {
+                if (application.getHoursRequested() == null || application.getDate() == null ||
+                        application.getFromTime() == null || application.getToTime() == null) {
                     throw new IllegalArgumentException("Date and time range are required");
                 }
                 if (application.getFromTime().equals(application.getToTime())) {
@@ -216,7 +242,6 @@ public class ApplicationService {
         Long userId = application.getUserId();
         Long affectedUserId = application.getAffectedUserId();
 
-        // Verificar que el turno que cede el solicitante es el que realmente tiene
         List<TurnAssigned> userTurns = turnAssignedRepository
                 .findByUserIdAndDateBetween(userId, start, end);
 
@@ -229,7 +254,6 @@ public class ApplicationService {
             }
         }
 
-        // Verificar que el turno que recibe el solicitante es el que tiene el afectado
         List<TurnAssigned> affectedTurns = turnAssignedRepository
                 .findByUserIdAndDateBetween(affectedUserId, start, end);
 
@@ -244,8 +268,7 @@ public class ApplicationService {
     }
 
     // PUT
-    public ApplicationOutDto modifyApplication(Long id, ApplicationPutInDto application) throws
-            ApplicationNotFoundException {
+    public ApplicationOutDto modifyApplication(Long id, ApplicationPutInDto application) throws ApplicationNotFoundException {
         Application existingApplication = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
 
@@ -265,25 +288,52 @@ public class ApplicationService {
         }
 
         Application savedApplication = applicationRepository.save(existingApplication);
-        return modelMapper.map(savedApplication, ApplicationOutDto.class);
+
+        // Notificar al solicitante
+        String statusText = existingApplication.getStatus() == ApplicationStatus.APPROVED ? "aprobada" : "rechazada";
+        String typeName = existingApplication.getApplicationType().getName();
+
+        notificationService.createNotification(
+                existingApplication.getUser().getId(),
+                "Tu solicitud de " + typeName + " ha sido " + statusText + "." +
+                        (application.getResolverComments() != null && !application.getResolverComments().isBlank()
+                                ? " Comentario: " + application.getResolverComments() : "")
+        );
+
+        // Notificar al afectado si es cambio de turno
+        if (typeName.equals("Cambio de turno") && existingApplication.getAffectedUser() != null) {
+            notificationService.createNotification(
+                    existingApplication.getAffectedUser().getId(),
+                    "El cambio de turno solicitado por " + existingApplication.getUser().getName() +
+                            " ha sido " + statusText + "." +
+                            (application.getResolverComments() != null && !application.getResolverComments().isBlank()
+                                    ? " Comentario: " + application.getResolverComments() : "")
+            );
+        }
+
+        ApplicationOutDto dto = modelMapper.map(savedApplication, ApplicationOutDto.class);
+        dto.setUserId(savedApplication.getUser().getId());
+        dto.setUserName(savedApplication.getUser().getName());
+        dto.setApplicationTypeId(savedApplication.getApplicationType().getId());
+        if (savedApplication.getAffectedUser() != null) {
+            dto.setAffectedUserId(savedApplication.getAffectedUser().getId());
+            dto.setAffectedUserName(savedApplication.getAffectedUser().getName());
+        }
+        return dto;
     }
 
     // CAMBIOS DE CALENDARIO
-
     public void applyEffects(Application existingApplication) {
         String typeName = existingApplication.getApplicationType().getName();
-
         switch (typeName) {
             case "Vacaciones":
             case "Dias Exceso":
             case "No Retribuido":
                 applyDaysEffect(existingApplication);
                 break;
-
             case "Bolsa de horas":
                 applyHoursEffect(existingApplication);
                 break;
-
             case "Cambio de turno":
                 applyChangeEffect(existingApplication);
                 break;
@@ -291,7 +341,6 @@ public class ApplicationService {
     }
 
     public void applyDaysEffect(Application existingApplication) {
-
         Long userId = existingApplication.getUser().getId();
         int year = existingApplication.getStartDate().getYear();
 
@@ -306,45 +355,43 @@ public class ApplicationService {
         String type = existingApplication.getApplicationType().getName();
 
         if (type.equals("Vacaciones")) {
-            if (balance.getVacationDays() < days) {
-                throw new RuntimeException("You have " + balance.getVacationDays() + " days");
-            }
+            if (balance.getVacationDays() < days)
+                throw new RuntimeException("No tienes suficientes días de vacaciones");
             balance.setVacationDays(balance.getVacationDays() - (int) days);
         }
         if (type.equals("Dias Exceso")) {
-            if (balance.getExcessDays() < days) {
-                throw new RuntimeException("You have " + balance.getExcessDays() + " days");
-            }
+            if (balance.getExcessDays() < days)
+                throw new RuntimeException("No tienes suficientes días de exceso");
             balance.setExcessDays(balance.getExcessDays() - (int) days);
         }
         if (type.equals("No Retribuido")) {
-            if (balance.getUnpaidDays() < days) {
-                throw new RuntimeException("You have " + balance.getUnpaidDays() + " days");
-            }
+            if (balance.getUnpaidDays() < days)
+                throw new RuntimeException("No tienes suficientes días no retribuidos");
             balance.setUnpaidDays(balance.getUnpaidDays() - (int) days);
         }
 
         userBalanceRepository.save(balance);
 
-        // Cambiar en Calendario a V
         List<TurnAssigned> turns = turnAssignedRepository
-                .findByUserIdAndDateBetween(
-                        userId,
+                .findByUserIdAndDateBetween(userId,
                         existingApplication.getStartDate(),
                         existingApplication.getEndDate());
 
-        Turns changeTurn = turnRepository.findByName("Vacaciones")
-                .orElseThrow(() -> new RuntimeException("Turn Vacaciones not found"));
+        String turnName = switch (type) {
+            case "Vacaciones" -> "Vacaciones";
+            case "Dias Exceso" -> "Día Exceso";
+            case "No Retribuido" -> "No Retribuido";
+            default -> "Vacaciones";
+        };
 
-        for (TurnAssigned t : turns) {
-            t.setTurn(changeTurn);
-        }
+        Turns changeTurn = turnRepository.findByName(turnName)
+                .orElseThrow(() -> new RuntimeException("Turn " + turnName + " not found"));
 
+        for (TurnAssigned t : turns) t.setTurn(changeTurn);
         turnAssignedRepository.saveAll(turns);
     }
 
     public void applyHoursEffect(Application existingApplication) {
-
         Long userId = existingApplication.getUser().getId();
         int year = existingApplication.getDate().getYear();
         double hours = existingApplication.getHoursRequested();
@@ -353,9 +400,8 @@ public class ApplicationService {
                 .findByUserIdAndYear(userId, year)
                 .orElseThrow();
 
-        if (balance.getHoursBalance() < hours) {
+        if (balance.getHoursBalance() < hours)
             throw new RuntimeException("You have " + balance.getHoursBalance() + " hours");
-        }
 
         balance.setHoursBalance(balance.getHoursBalance() - (int) hours);
         userBalanceRepository.save(balance);
@@ -367,54 +413,39 @@ public class ApplicationService {
             String info = (t.getInfo() == null) ? "" : t.getInfo();
             t.setInfo(info + " [Balances Hours: " + hours + "h]");
         }
-
         turnAssignedRepository.saveAll(turns);
     }
 
     public void applyChangeEffect(Application app) {
-
         User user = app.getUser();
         User affectedUser = app.getAffectedUser();
         int totalDays = (int) ChronoUnit.DAYS.between(app.getStartDate(), app.getEndDate()) + 1;
         int year = app.getStartDate().getYear();
 
-        // Si el turno que DA el afectado es Vacaciones, se le devuelven (porque ya no las gasta)
-        if (app.getTurnGive().getName().equalsIgnoreCase("Vacaciones")) {
+        if (app.getTurnGive().getName().equalsIgnoreCase("Vacaciones"))
             updateBalance(user.getId(), year, totalDays);
-        }
-        // Si el turno que RECIBE el solicitante es Vacaciones, se le restan a él
-        if (app.getTurnReceive().getName().equalsIgnoreCase("Vacaciones")) {
+        if (app.getTurnReceive().getName().equalsIgnoreCase("Vacaciones"))
             updateBalance(user.getId(), year, -totalDays);
-        }
-
-        // Si lo que Kipi RECIBE son Vacaciones -> SE LE QUITAN (Resta)
-        if (app.getTurnGive().getName().trim().equalsIgnoreCase("Vacaciones")) {
+        if (app.getTurnGive().getName().trim().equalsIgnoreCase("Vacaciones"))
             updateBalance(affectedUser.getId(), year, -totalDays);
-        }
-        // Si lo que Kipi SUELTA son Vacaciones -> SE LE DEVUELVEN (Suma)
-        if (app.getTurnReceive().getName().trim().equalsIgnoreCase("Vacaciones")) {
+        if (app.getTurnReceive().getName().trim().equalsIgnoreCase("Vacaciones"))
             updateBalance(affectedUser.getId(), year, totalDays);
-        }
 
-        // --- INTERCAMBIO EN CALENDARIO ---
-        // (Esto se queda igual porque solo mueves las piezas)
-        List<TurnAssigned> userTurns = turnAssignedRepository.findByUserIdAndDateBetween(user.getId(), app.getStartDate(), app.getEndDate());
-        List<TurnAssigned> affectedTurns = turnAssignedRepository.findByUserIdAndDateBetween(affectedUser.getId(), app.getStartDate(), app.getEndDate());
+        List<TurnAssigned> userTurns = turnAssignedRepository
+                .findByUserIdAndDateBetween(user.getId(), app.getStartDate(), app.getEndDate());
+        List<TurnAssigned> affectedTurns = turnAssignedRepository
+                .findByUserIdAndDateBetween(affectedUser.getId(), app.getStartDate(), app.getEndDate());
 
         for (TurnAssigned ut : userTurns) ut.setTurn(app.getTurnReceive());
         for (TurnAssigned at : affectedTurns) at.setTurn(app.getTurnGive());
 
         turnAssignedRepository.saveAll(userTurns);
         turnAssignedRepository.saveAll(affectedTurns);
-
     }
 
     private void updateBalance(Long userId, int year, int amount) {
         UserBalance balance = userBalanceRepository.findByUserIdAndYear(userId, year)
                 .orElseThrow(() -> new RuntimeException("Balance no encontrado para usuario: " + userId));
-
-        int currentDays = balance.getVacationDays();
-
         balance.setVacationDays(balance.getVacationDays() + amount);
         userBalanceRepository.saveAndFlush(balance);
     }
@@ -423,7 +454,6 @@ public class ApplicationService {
     public void deleteApp(Long id) throws ApplicationNotFoundException {
         Application application = applicationRepository.findById(id)
                 .orElseThrow(() -> new ApplicationNotFoundException("Application not found"));
-
         applicationRepository.deleteById(id);
     }
 }

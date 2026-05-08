@@ -91,28 +91,54 @@ public class TurnAssignedService {
     }
 
     // PUT
-    public TurnAssignedOutDto modify(Long id, TurnAssignedInDto assigned)throws TurnsAssignedNotFoundException {
+    public TurnAssignedOutDto modify(Long id, TurnAssignedInDto assigned) throws TurnsAssignedNotFoundException {
         TurnAssigned existingAssigned = turnAssignedRepository.findById(id)
                 .orElseThrow(() -> new TurnsAssignedNotFoundException("Turn assigned not found"));
 
         User user = userRepository.findById(assigned.getUserId())
                 .orElseThrow(() -> new TurnsAssignedNotFoundException("User not found"));
-        Turns turn = turnRepository.findById(assigned.getTurnId())
+        Turns newTurn = turnRepository.findById(assigned.getTurnId())
                 .orElseThrow(() -> new TurnsAssignedNotFoundException("Turn not found"));
 
-        modelMapper.map(assigned, existingAssigned);
+        Turns oldTurn = existingAssigned.getTurn();
+        UserBalance balance = userBalanceRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Balance not found"));
+
+        // Si el turno anterior era vacaciones → devolver día
+        if (oldTurn.getName().toLowerCase().contains("vacaciones")) {
+            balance.setVacationDays(balance.getVacationDays() + 1);
+        }
+
+        // Si el nuevo turno es vacaciones → restar día
+        if (newTurn.getName().toLowerCase().contains("vacaciones")) {
+            if (balance.getVacationDays() <= 0) {
+                throw new RuntimeException("No quedan días de vacaciones disponibles");
+            }
+            balance.setVacationDays(balance.getVacationDays() - 1);
+        }
+
+        userBalanceRepository.save(balance);
 
         existingAssigned.setUser(user);
-        existingAssigned.setTurn(turn);
+        existingAssigned.setTurn(newTurn);
 
         TurnAssigned savedAssigned = turnAssignedRepository.save(existingAssigned);
-        return modelMapper.map(existingAssigned, TurnAssignedOutDto.class);
+        return modelMapper.map(savedAssigned, TurnAssignedOutDto.class);
     }
 
     // DELETE
-    public void deleteAssigned(Long id)throws TurnsAssignedNotFoundException {
+    // DELETE - al eliminar, si era vacaciones devolver días
+    public void deleteAssigned(Long id) throws TurnsAssignedNotFoundException {
         TurnAssigned assigned = turnAssignedRepository.findById(id)
                 .orElseThrow(() -> new TurnsAssignedNotFoundException("Turn assigned not found"));
+
+        // Si el turno era vacaciones → devolver día al balance
+        if (assigned.getTurn().getName().toLowerCase().contains("vacaciones")) {
+            UserBalance balance = userBalanceRepository.findByUser(assigned.getUser())
+                    .orElseThrow(() -> new RuntimeException("Balance not found"));
+            balance.setVacationDays(balance.getVacationDays() + 1);
+            userBalanceRepository.save(balance);
+        }
 
         turnAssignedRepository.deleteById(id);
     }

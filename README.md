@@ -1,4 +1,4 @@
-# WorkLink API2
+# WorkLink API
 
 API REST para la gestión de turnos del trabajo, solicitudes y usuarios de una empresa, desarrollada con Java Spring Boot y desplegada con Docker.
 

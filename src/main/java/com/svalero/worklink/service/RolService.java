@@ -96,7 +96,6 @@ public class RolService {
 
     // PUT CON VERSIONADO
     public RolOutDto modifyRol(Long id, RolInDto rol) throws RolNotFoundException {
-        System.out.println(">>> EJECUTANDO MODIFY ROL V1 - SIN ACTIVE");
         Rol existingRol = rolRepository.findById(id)
                 .orElseThrow(() -> new RolNotFoundException("Rol not found"));
 
