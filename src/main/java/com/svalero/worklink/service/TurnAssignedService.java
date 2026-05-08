@@ -121,6 +121,7 @@ public class TurnAssignedService {
 
         existingAssigned.setUser(user);
         existingAssigned.setTurn(newTurn);
+        existingAssigned.setDate(assigned.getDate());
 
         TurnAssigned savedAssigned = turnAssignedRepository.save(existingAssigned);
         return modelMapper.map(savedAssigned, TurnAssignedOutDto.class);
